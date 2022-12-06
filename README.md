@@ -16,5 +16,5 @@ Use your choice of text editor to adjust the values to your liking.
 Finally, re-load the avatar by either loading a new level or switching to a different avatar and then back. The avatar should now have the custom stats you gave it!
 
 
-
-This mod was inspired by StatsOverride ( https://bonelab.thunderstore.io/package/extraes/StatOverride/ ) , and I looked at (disassembled) code for it and for DynamicBones ( https://bonelab.thunderstore.io/package/LlamasHere/Dynamic_Bones/ ) in order to figure out how to make this mod. NO SIGNIFICANT PORTIONS OF CODE WERE COPIED TO MAKE THIS MOD.
+[Link text Here](https://link-url-here.org)
+This mod was inspired by [StatsOverride](https://bonelab.thunderstore.io/package/extraes/StatOverride/) , and I looked at (disassembled) code for it and for [DynamicBones](https://bonelab.thunderstore.io/package/LlamasHere/Dynamic_Bones/) in order to figure out how to make this mod. NO SIGNIFICANT PORTIONS OF CODE WERE COPIED TO MAKE THIS MOD.
