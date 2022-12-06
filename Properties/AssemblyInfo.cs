@@ -8,11 +8,11 @@ using AvatarStatsLoader;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("AvatarStatsLoader")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Customized stats loader for BoneLab")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("AvatarStatsLoader")]
-[assembly: AssemblyCopyright("Copyright ©  2022")]
+[assembly: AssemblyCopyright("Copyright © FirEmerald 2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -34,7 +34,7 @@ using AvatarStatsLoader;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.0")]
+[assembly: AssemblyFileVersion("1.0.0")]
 
-[assembly: MelonInfo(typeof(AvatarStatsMod), "Avatar Stats Loader", "1.0", "FirEmerald")] //TODO mod link
+[assembly: MelonInfo(typeof(AvatarStatsMod), "Avatar Stats Loader", "1.0.0", "FirEmerald")] //TODO mod link

@@ -1,5 +1,4 @@
 ﻿using MelonLoader;
-using MelonLoader.Preferences;
 using HarmonyLib;
 using SLZ.VRMK;
 using Il2CppSystem.IO;
@@ -20,7 +19,7 @@ namespace AvatarStatsLoader
         public override void OnInitializeMelon()
         {
             mpCat = MelonPreferences.CreateCategory(nameof(AvatarStatsMod));
-            devMode = mpCat.CreateEntry<bool>("devMode", false, "devMode", "Developer mode - will output default loaded avatar stats to " + DEV_FOLDER, false, false, (ValueValidator)null, (string)null);
+            devMode = mpCat.CreateEntry("devMode", false, "devMode", "Developer mode - will output default loaded avatar stats to " + DEV_FOLDER, false, false, null, null);
             mpCat.SaveToFile(true);
         }
 
@@ -43,9 +42,9 @@ namespace AvatarStatsLoader
         public static void Postfix(Avatar __instance)
         {
             string name = __instance.name;
-            if (name == "[RealHeptaRig (Marrow1)]")
+            if (name == "[RealHeptaRig (Marrow1)]") //don't load for empty rig
                 return;
-            else if (name.EndsWith("(Clone)"))
+            else if (name.EndsWith("(Clone)")) //remove "(Clone)" from mod avatars
                name = __instance.name.Substring(0, __instance.name.Length - "(Clone)".Length);
             if (AvatarStatsMod.devMode.Value)
             {
@@ -56,8 +55,7 @@ namespace AvatarStatsLoader
                 }
                 string outputFile = AvatarStatsMod.DEV_FOLDER + "\\" + name + ".json";
                 AvatarStatsMod.Log("Saving default stats to " + outputFile);
-                AvatarStats stats = new AvatarStats(__instance);
-                File.WriteAllText(outputFile, JsonConvert.SerializeObject(stats));
+                File.WriteAllText(outputFile, JsonConvert.SerializeObject(new AvatarStats(__instance)));
             }
             if (!Directory.Exists(AvatarStatsMod.JSON_FOLDER))
             {
@@ -67,14 +65,8 @@ namespace AvatarStatsLoader
             string statsFile = AvatarStatsMod.JSON_FOLDER + "\\" + name + ".json";
             if (File.Exists(statsFile))
             {
-                AvatarStatsMod.Log("Overriding stats now!");
-                AvatarStats stats = JsonConvert.DeserializeObject<AvatarStats>(File.ReadAllText(statsFile));
-                __instance._agility = stats.agility;
-                __instance._strengthUpper = stats.strengthUpper;
-                __instance._strengthLower = stats.strengthLower;
-                __instance._vitality = stats.vitality;
-                __instance._speed = stats.speed;
-                __instance._intelligence = stats.intelligence;
+                AvatarStatsMod.Log("Overriding stats with values from " + statsFile);
+                JsonConvert.DeserializeObject<AvatarStats>(File.ReadAllText(statsFile)).apply(__instance);
             }
         }
     }
@@ -100,6 +92,16 @@ namespace AvatarStatsLoader
             vitality = avatar._vitality;
             speed = avatar._speed;
             intelligence = avatar._intelligence;
+        }
+
+        public void apply(Avatar avatar)
+        {
+            avatar._agility = agility;
+            avatar._strengthUpper = strengthUpper;
+            avatar._strengthLower = strengthLower;
+            avatar._vitality = vitality;
+            avatar._speed = speed;
+            avatar._intelligence = intelligence;
         }
     }
 }
