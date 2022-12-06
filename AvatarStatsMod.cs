@@ -8,8 +8,10 @@ namespace AvatarStatsLoader
 {
     public class AvatarStatsMod : MelonMod
     {
-        internal static readonly string JSON_FOLDER = MelonUtils.UserDataDirectory + "\\AvatarStats";
-        internal static readonly string DEV_FOLDER = MelonUtils.UserDataDirectory + "\\AvatarStats\\dev";
+        internal static readonly string STATS_FOLDER = MelonUtils.UserDataDirectory + "\\AvatarStats";
+        internal static readonly string STATS_DEV_FOLDER = STATS_FOLDER + "\\dev";
+        internal static readonly string MASS_FOLDER = MelonUtils.UserDataDirectory + "\\AvatarMass";
+        internal static readonly string MASS_DEV_FOLDER = MASS_FOLDER + "\\dev";
         internal static AvatarStatsMod instance;
         internal static MelonPreferences_Category mpCat;
         internal static MelonPreferences_Entry<bool> devMode;
@@ -19,7 +21,7 @@ namespace AvatarStatsLoader
         public override void OnInitializeMelon()
         {
             mpCat = MelonPreferences.CreateCategory(nameof(AvatarStatsMod));
-            devMode = mpCat.CreateEntry("devMode", false, "devMode", "Developer mode - will output default loaded avatar stats to " + DEV_FOLDER, false, false, null, null);
+            devMode = mpCat.CreateEntry("devMode", false, "devMode", "Developer mode - will output default loaded avatar stats to " + STATS_DEV_FOLDER + " and masses to " + MASS_DEV_FOLDER, false, false, null, null);
             mpCat.SaveToFile(true);
         }
 
@@ -45,24 +47,24 @@ namespace AvatarStatsLoader
             if (name == "[RealHeptaRig (Marrow1)]") //don't load for empty rig
                 return;
             else if (name.EndsWith("(Clone)")) //remove "(Clone)" from mod avatars
-               name = __instance.name.Substring(0, __instance.name.Length - "(Clone)".Length);
+                name = __instance.name.Substring(0, __instance.name.Length - "(Clone)".Length);
             if (AvatarStatsMod.devMode.Value)
             {
-                if (!Directory.Exists(AvatarStatsMod.DEV_FOLDER))
+                if (!Directory.Exists(AvatarStatsMod.STATS_DEV_FOLDER))
                 {
-                    DirectoryInfo info = Directory.CreateDirectory(AvatarStatsMod.DEV_FOLDER);
+                    DirectoryInfo info = Directory.CreateDirectory(AvatarStatsMod.STATS_DEV_FOLDER);
                     AvatarStatsMod.Log("Avatar stats developer folder did not exist, created at " + info.Name);
                 }
-                string outputFile = AvatarStatsMod.DEV_FOLDER + "\\" + name + ".json";
+                string outputFile = AvatarStatsMod.STATS_DEV_FOLDER + "\\" + name + ".json";
                 AvatarStatsMod.Log("Saving default stats to " + outputFile);
                 File.WriteAllText(outputFile, JsonConvert.SerializeObject(new AvatarStats(__instance)));
             }
-            if (!Directory.Exists(AvatarStatsMod.JSON_FOLDER))
+            if (!Directory.Exists(AvatarStatsMod.STATS_FOLDER))
             {
-                DirectoryInfo info = Directory.CreateDirectory(AvatarStatsMod.JSON_FOLDER);
+                DirectoryInfo info = Directory.CreateDirectory(AvatarStatsMod.STATS_FOLDER);
                 AvatarStatsMod.Log("Avatar stats folder did not exist, created at " + info.Name);
             }
-            string statsFile = AvatarStatsMod.JSON_FOLDER + "\\" + name + ".json";
+            string statsFile = AvatarStatsMod.STATS_FOLDER + "\\" + name + ".json";
             if (File.Exists(statsFile))
             {
                 AvatarStatsMod.Log("Overriding stats with values from " + statsFile);
@@ -70,7 +72,6 @@ namespace AvatarStatsLoader
             }
         }
     }
-
     public class AvatarStats
     {
         public float agility;
@@ -102,6 +103,73 @@ namespace AvatarStatsLoader
             avatar._vitality = vitality;
             avatar._speed = speed;
             avatar._intelligence = intelligence;
+        }
+    }
+
+    [HarmonyPatch(typeof(Avatar), "ComputeMass")]
+    public static class AvatarComputeMassChange
+    {
+        public static void Postfix(Avatar __instance, float normalizeTo82)
+        {
+            string name = __instance.name;
+            if (name == "[RealHeptaRig (Marrow1)]") //don't load for empty rig
+                return;
+            else if (name.EndsWith("(Clone)")) //remove "(Clone)" from mod avatars
+                name = __instance.name.Substring(0, __instance.name.Length - "(Clone)".Length);
+            if (AvatarStatsMod.devMode.Value)
+            {
+                if (!Directory.Exists(AvatarStatsMod.MASS_DEV_FOLDER))
+                {
+                    DirectoryInfo info = Directory.CreateDirectory(AvatarStatsMod.MASS_DEV_FOLDER);
+                    AvatarStatsMod.Log("Avatar mass developer folder did not exist, created at " + info.Name);
+                }
+                string outputFile = AvatarStatsMod.MASS_DEV_FOLDER + "\\" + name + ".json";
+                AvatarStatsMod.Log("Saving default mass to " + outputFile);
+                File.WriteAllText(outputFile, JsonConvert.SerializeObject(new AvatarMass(__instance, normalizeTo82)));
+            }
+            if (!Directory.Exists(AvatarStatsMod.MASS_FOLDER))
+            {
+                DirectoryInfo info = Directory.CreateDirectory(AvatarStatsMod.MASS_FOLDER);
+                AvatarStatsMod.Log("Avatar masses folder did not exist, created at " + info.Name);
+            }
+            string massFile = AvatarStatsMod.MASS_FOLDER + "\\" + name + ".json";
+            if (File.Exists(massFile))
+            {
+                AvatarStatsMod.Log("Overriding mass with values from " + massFile);
+                JsonConvert.DeserializeObject<AvatarMass>(File.ReadAllText(massFile)).apply(__instance, normalizeTo82);
+            }
+        }
+    }
+
+    public class AvatarMass
+    {
+        public float massChest;
+        public float massPelvis;
+        public float massHead;
+        public float massArm;
+        public float massLeg;
+
+        public AvatarMass()
+        {
+        }
+
+        public AvatarMass(Avatar avatar, float scale)
+        {
+            massChest = avatar._massChest / scale;
+            massPelvis = avatar._massPelvis / scale;
+            massHead = avatar._massHead / scale;
+            massArm = avatar._massArm / scale;
+            massLeg = avatar._massLeg / scale;
+        }
+
+        public void apply(Avatar avatar, float scale)
+        {
+            avatar._massChest = massChest * scale;
+            avatar._massPelvis = massPelvis * scale;
+            avatar._massHead = massHead * scale;
+            avatar._massArm = massArm * scale;
+            avatar._massLeg = massLeg * scale;
+            avatar._massTotal = (massChest + massPelvis + massHead + ((massArm + massLeg) * 2)) * scale;
         }
     }
 }
