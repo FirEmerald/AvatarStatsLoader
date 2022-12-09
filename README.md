@@ -4,11 +4,10 @@ Allows loading of customized avatar stats in BoneLab<br/>
 <br/>
 AvatarStatsLoader loads customized avatar stats from "\<Game directory\>\\UserData\\AvatarStats\\\<avatar name\>.json".<br/>
 To set up custom stats, you'll first want [MelonPreferencesManager](https://github.com/sinai-dev/MelonPreferencesManager)<br/>
-Then, in-game, switch to the avatar you want to set up. ***make sure that it's the last loaded avatar as per the MelonLoader console!***<br/>
+Then, in-game, switch to the avatar you want to set up.<br/>
 Open up the preferences manager and navigate to the AvatarStatsMod options.<br/>
-Check "Load stats" and/or "Load masses" depending what you want to edit, and click "Save Preferences".<br/>
-The options should be populated with the current values for the avatar.<br/>
-Edit any values to your liking, and then click "Save preferences" again.<br/>
+The options will have been populated with the current values for the avatar.<br/>
+Edit any values to your liking, and then click "Save preferences" again. Use the "default" button to reset any values to the avatar's normally calculated value.<br/>
 Finally, check "Save stats" and/or "Save masses", depending on what you edited, and click "Save Preferences".<br/>
 Your changes will have been saved to the appropriate file(s). To see them in-game, simply swap to another avatar and back or load a new level.<br/>
 <br/>
