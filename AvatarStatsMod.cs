@@ -3,6 +3,7 @@ using HarmonyLib;
 using SLZ.VRMK;
 using Il2CppSystem.IO;
 using Newtonsoft.Json;
+using BoneLib;
 
 namespace AvatarStatsLoader
 {
@@ -22,25 +23,63 @@ namespace AvatarStatsLoader
 
         public override void OnInitializeMelon()
         {
+            Hooking.OnSwitchAvatarPostfix += (avatar) => {
+                if (avatar != null)
+                {
+                    string name = avatar.name;
+                    if (name != "[RealHeptaRig (Marrow1)]") //don't save for empty rig
+                    {
+                        if (name.EndsWith("(Clone)")) //remove "(Clone)" from mod avatars
+                            name = avatar.name.Substring(0, avatar.name.Length - "(Clone)".Length);
+                        lastLoadedAvatar = avatar;
+                        Log("Setting avatar to " + name);
+                        agility.DefaultValue = avatar.getDefAgility();
+                        agility.Value = avatar._agility;
+                        strengthUpper.DefaultValue = avatar.getDefStrengthUpper();
+                        strengthUpper.Value = avatar._strengthUpper;
+                        strengthLower.DefaultValue = avatar.getDefStrengthLower();
+                        strengthLower.Value = avatar._strengthLower;
+                        vitality.DefaultValue = avatar.getDefVitality();
+                        vitality.Value = avatar._vitality;
+                        speed.DefaultValue = avatar.getDefSpeed();
+                        speed.Value = avatar._speed;
+                        intelligence.DefaultValue = avatar.getDefIntelligence();
+                        intelligence.Value = avatar._intelligence;
+                        massChest.DefaultValue = avatar.getDefMassChest();
+                        massChest.Value = avatar._massChest;
+                        massPelvis.DefaultValue = avatar.getDefMassPelvis();
+                        massPelvis.Value = avatar._massPelvis;
+                        massHead.DefaultValue = avatar.getDefMassHead();
+                        massHead.Value = avatar._massHead;
+                        massArm.DefaultValue = avatar.getDefMassArm();
+                        massArm.Value = avatar._massArm;
+                        massLeg.DefaultValue = avatar.getDefMassLeg();
+                        massLeg.Value = avatar._massLeg;
+                    }
+                }
+                else
+                {
+                    lastLoadedAvatar = null;
+                    Log("Setting avatar to null");
+                }
+            };
             mpCat = MelonPreferences.CreateCategory(nameof(AvatarStatsMod));
-            agility = mpCat.CreateEntry("agility", 0f, "Agility", "Agility stat of the last loaded avatar. WARNING: Check the MelonLoader output - certain actions may make the last loaded avatar different from your current avatar!", dont_save_default:true);
-            strengthUpper = mpCat.CreateEntry("strengthUpper", 0f, "Arm strength", "Arm strength stat of the last loaded avatar. WARNING: Check the MelonLoader output - certain actions may make the last loaded avatar different from your current avatar!", dont_save_default: true);
-            strengthLower = mpCat.CreateEntry("strengthLower", 0f, "Leg strength", "Leg strength stat of the last loaded avatar. WARNING: Check the MelonLoader output - certain actions may make the last loaded avatar different from your current avatar!", dont_save_default: true);
-            vitality = mpCat.CreateEntry("vitality", 0f, "Vitality", "Vitality stat of the last loaded avatar. WARNING: Check the MelonLoader output - certain actions may make the last loaded avatar different from your current avatar!", dont_save_default: true);
-            speed = mpCat.CreateEntry("speed", 0f, "Speed", "Speed stat of the last loaded avatar. WARNING: Check the MelonLoader output - certain actions may make the last loaded avatar different from your current avatar!", dont_save_default: true);
-            intelligence = mpCat.CreateEntry("intelligence", 0f, "Intelligence", "Intelligence stat of the last loaded avatar. WARNING: Check the MelonLoader output - certain actions may make the last loaded avatar different from your current avatar!", dont_save_default: true);
-            loadStats = mpCat.CreateEntry("loadStats", false, "Load stats", "loads the stats of the last loaded avatar into the preferences. WARNING: Check the MelonLoader output - certain actions may make the last loaded avatar different from your current avatar!");
-            loadStats.OnEntryValueChanged.Subscribe((prev, cur) =>
-            {
+            agility = mpCat.CreateEntry("agility", 0f, "Agility", "Determines how fast an avatar can acclerate or decelerate.", dont_save_default:true);
+            strengthUpper = mpCat.CreateEntry("strengthUpper", 0f, "Arm strength", "Determines the arm strength, affecting weapon holding and climbing.", dont_save_default: true);
+            strengthLower = mpCat.CreateEntry("strengthLower", 0f, "Leg strength", "Determines leg strength, affecting running and jumping.", dont_save_default: true);
+            vitality = mpCat.CreateEntry("vitality", 0f, "Vitality", "Determines how much damage an avatar takes.", dont_save_default: true);
+            speed = mpCat.CreateEntry("speed", 0f, "Speed", "Determines how fast an avatar can run.", dont_save_default: true);
+            intelligence = mpCat.CreateEntry("intelligence", 0f, "Intelligence", "Currently has no effect.", dont_save_default: true);
+            loadStats = mpCat.CreateEntry("loadStats", false, "Reload stats", "reloads the stats of the current avatar into the preferences.");
+            loadStats.OnEntryValueChanged.Subscribe((prev, cur) => {
                 if (cur)
                 {
                     loadStatValues();
                     loadStats.ResetToDefault();
                 }
             });
-            saveStats = mpCat.CreateEntry("saveStats", false, "Save stats", "Saves the current stat preferences into the override file of the last loaded avatar. WARNING: Check the MelonLoader output - certain actions may make the last loaded avatar different from your current avatar!");
-            saveStats.OnEntryValueChanged.Subscribe((prev, cur) =>
-            {
+            saveStats = mpCat.CreateEntry("saveStats", false, "Save stats", "Saves the current stat preferences into the override file of the current avatar.");
+            saveStats.OnEntryValueChanged.Subscribe((prev, cur) => {
                 if (cur)
                 {
                     if (lastLoadedAvatar != null)
@@ -63,23 +102,21 @@ namespace AvatarStatsLoader
                     saveStats.ResetToDefault();
                 }
             });
-            massChest = mpCat.CreateEntry("massChest", 0f, "Chest mass", "Chest mass of the last loaded avatar. WARNING: Check the MelonLoader output - certain actions may make the last loaded avatar different from your current avatar!", dont_save_default: true);
-            massPelvis = mpCat.CreateEntry("massPelvis", 0f, "Pelvis mass", "Pelvis mass of the last loaded avatar. WARNING: Check the MelonLoader output - certain actions may make the last loaded avatar different from your current avatar!", dont_save_default: true);
-            massHead = mpCat.CreateEntry("massHead", 0f, "Head mass", "Head mass of the last loaded avatar. WARNING: Check the MelonLoader output - certain actions may make the last loaded avatar different from your current avatar!", dont_save_default: true);
-            massArm = mpCat.CreateEntry("massArm", 0f, "Arm mass", "Arm mass of the last loaded avatar. WARNING: Check the MelonLoader output - certain actions may make the last loaded avatar different from your current avatar!", dont_save_default: true);
-            massLeg = mpCat.CreateEntry("massLeg", 0f, "Leg mass", "Leg mass of the last loaded avatar. WARNING: Check the MelonLoader output - certain actions may make the last loaded avatar different from your current avatar!", dont_save_default: true);
-            loadMasses = mpCat.CreateEntry("loadMasses", false, "Load masses", "Loads the mass of the last loaded avatar into the preferences. WARNING: Check the MelonLoader output - certain actions may make the last loaded avatar different from your current avatar!");
-            loadMasses.OnEntryValueChanged.Subscribe((prev, cur) =>
-            {
+            massChest = mpCat.CreateEntry("massChest", 0f, "Chest mass", "Chest mass of the last loaded avatar.", dont_save_default: true);
+            massPelvis = mpCat.CreateEntry("massPelvis", 0f, "Pelvis mass", "Pelvis mass of the last loaded avatar.", dont_save_default: true);
+            massHead = mpCat.CreateEntry("massHead", 0f, "Head mass", "Head mass of the last loaded avatar.", dont_save_default: true);
+            massArm = mpCat.CreateEntry("massArm", 0f, "Arm mass", "Arm mass of the last loaded avatar.", dont_save_default: true);
+            massLeg = mpCat.CreateEntry("massLeg", 0f, "Leg mass", "Leg mass of the last loaded avatar.", dont_save_default: true);
+            loadMasses = mpCat.CreateEntry("loadMasses", false, "Reload masses", "Reloads the mass of the current avatar into the preferences.");
+            loadMasses.OnEntryValueChanged.Subscribe((prev, cur) => {
                 if (cur)
                 {
                     loadMassValues();
                     loadMasses.ResetToDefault();
                 }
             });
-            saveMasses = mpCat.CreateEntry("saveMasses", false, "Save masses", "Saves the current mass preferences into the override file of the last loaded avatar. WARNING: Check the MelonLoader output - certain actions may make the last loaded avatar different from your current avatar!");
-            saveMasses.OnEntryValueChanged.Subscribe((prev, cur) =>
-            {
+            saveMasses = mpCat.CreateEntry("saveMasses", false, "Save masses", "Saves the current mass preferences into the override file of the current avatar.");
+            saveMasses.OnEntryValueChanged.Subscribe((prev, cur) => {
                 if (cur)
                 {
                     if (lastLoadedAvatar != null)
@@ -107,33 +144,34 @@ namespace AvatarStatsLoader
 
         internal static void loadStatValues()
         {
-            if (lastLoadedAvatar != null)
-            {
-                agility.Value = lastLoadedAvatar._agility;
-                strengthUpper.Value = lastLoadedAvatar._strengthUpper;
-                strengthLower.Value = lastLoadedAvatar._strengthLower;
-                vitality.Value = lastLoadedAvatar._vitality;
-                speed.Value = lastLoadedAvatar._speed;
-                intelligence.Value = lastLoadedAvatar._intelligence;
-            }
+            if (lastLoadedAvatar != null) loadStatValues(lastLoadedAvatar);
+        }
+
+        internal static void loadStatValues(Avatar avatar)
+        {
+            agility.Value = avatar._agility;
+            strengthUpper.Value = avatar._strengthUpper;
+            strengthLower.Value = avatar._strengthLower;
+            vitality.Value = avatar._vitality;
+            speed.Value = avatar._speed;
+            intelligence.Value = avatar._intelligence;
         }
 
         internal static void loadMassValues()
         {
-            if (lastLoadedAvatar != null)
-            {
-                massChest.Value = lastLoadedAvatar._massChest;
-                massPelvis.Value = lastLoadedAvatar._massPelvis;
-                massHead.Value = lastLoadedAvatar._massHead;
-                massArm.Value = lastLoadedAvatar._massArm;
-                massLeg.Value = lastLoadedAvatar._massLeg;
-            }
+            if (lastLoadedAvatar != null) loadMassValues(lastLoadedAvatar);
         }
 
-        internal static void recalculateTotalMass(Avatar avatar)
+        internal static void loadMassValues(Avatar avatar)
         {
-            avatar._massTotal = (avatar._massChest + avatar._massPelvis + avatar._massHead + ((avatar._massArm + avatar._massLeg) * 2));
+            massChest.Value = avatar._massChest;
+            massPelvis.Value = avatar._massPelvis;
+            massHead.Value = avatar._massHead;
+            massArm.Value = avatar._massArm;
+            massLeg.Value = avatar._massLeg;
         }
+
+        internal static void recalculateTotalMass(Avatar avatar) => avatar._massTotal = (avatar._massChest + avatar._massPelvis + avatar._massHead + ((avatar._massArm + avatar._massLeg) * 2));
 
         internal static void Log(string str) => instance.LoggerInstance.Msg(str);
 
@@ -158,8 +196,8 @@ namespace AvatarStatsLoader
                 return;
             else if (name.EndsWith("(Clone)")) //remove "(Clone)" from mod avatars
                 name = __instance.name.Substring(0, __instance.name.Length - "(Clone)".Length);
-            AvatarStatsMod.Log("Loading stats: " + name);
-            AvatarStatsMod.lastLoadedAvatar = __instance;
+            __instance.setDefStats();
+            AvatarStatsMod.Log("Load stats: " + name);
             if (Directory.Exists(AvatarStatsMod.STATS_FOLDER))
             {
                 string statsFile = AvatarStatsMod.STATS_FOLDER + "\\" + name + ".json";
@@ -223,8 +261,8 @@ namespace AvatarStatsLoader
                 return;
             else if (name.EndsWith("(Clone)")) //remove "(Clone)" from mod avatars
                 name = __instance.name.Substring(0, __instance.name.Length - "(Clone)".Length);
-            AvatarStatsMod.Log("Loading masses: " + name);
-            AvatarStatsMod.lastLoadedAvatar = __instance;
+            __instance.setDefMasses();
+            AvatarStatsMod.Log("Load mass: " + name);
             if (Directory.Exists(AvatarStatsMod.MASS_FOLDER))
             {
                 string massFile = AvatarStatsMod.MASS_FOLDER + "\\" + name + ".json";
