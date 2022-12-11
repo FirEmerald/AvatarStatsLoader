@@ -3,7 +3,17 @@ Allows loading of customized avatar stats in BoneLab<br/>
 <br/>
 <br/>
 AvatarStatsLoader loads customized avatar stats from "\<Game directory\>\\UserData\\AvatarStats\\\<avatar name\>.json".<br/>
-To set up custom stats, you'll first want [MelonPreferencesManager](https://github.com/sinai-dev/MelonPreferencesManager)<br/>
+<br/>
+<br/>
+# Setting up custom stats using BoneLib 2.0.0 or newer using the BoneMenu
+In-game, switch to the avatar you want to set up.<br/>
+Open up Menu->Preferences/Options->BoneMenu->Avatar Stats or Avatar Mass<br/>
+Select which attribute(s) you would like to change - they should currently hold the current value for the avatar - and edit them to your liking. Note that the "set to" buttons will not update the displayed value, so just increase and decrease it once to see it.<br/>
+Finally, click "Save stats" or "Save masses", depending on what you edited.<br/>
+Your changes will have been saved to the appropriate file(s). To see them in-game, simply swap to another avatar and back or load a new level.<br/>
+<br/>
+<br/>
+# Setting up custom stats using [MelonPreferencesManager](https://github.com/sinai-dev/MelonPreferencesManager)
 Then, in-game, switch to the avatar you want to set up.<br/>
 Open up the preferences manager and navigate to the AvatarStatsMod options.<br/>
 The options will have been populated with the current values for the avatar.<br/>
@@ -12,7 +22,7 @@ Finally, check "Save stats" and/or "Save masses", depending on what you edited, 
 Your changes will have been saved to the appropriate file(s). To see them in-game, simply swap to another avatar and back or load a new level.<br/>
 <br/>
 <br/>
-A breakdown of the the different stats and what they do:<br/>
+# A breakdown of the the different stats and what they do:<br/>
 Agility: determines how fast an avatar can change direction and accelerate.<br/>
 Speed: determines the maximum running speed of an avatar.<br/>
 Strength Upper (Arm strength): determines the force with which an avatar can move things with it's hands. Beware - high values will cause issues when holding objects with two hands or climbing!<br/>
