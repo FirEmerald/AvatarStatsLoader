@@ -14,7 +14,7 @@ Your changes will have been saved to the appropriate file(s). To see them in-gam
 <br/>
 <br/>
 # Setting up custom stats using [MelonPreferencesManager](https://github.com/sinai-dev/MelonPreferencesManager)
-Then, in-game, switch to the avatar you want to set up.<br/>
+In-game, switch to the avatar you want to set up.<br/>
 Open up the preferences manager and navigate to the AvatarStatsMod options.<br/>
 The options will have been populated with the current values for the avatar.<br/>
 Edit any values to your liking, and then click "Save preferences" again. Use the "default" button to reset any values to the avatar's normally calculated value.<br/>
