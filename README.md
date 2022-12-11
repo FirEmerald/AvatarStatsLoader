@@ -8,7 +8,7 @@ AvatarStatsLoader loads customized avatar stats from "\<Game directory\>\\UserDa
 # Setting up custom stats using BoneLib 2.0.0 or newer using the BoneMenu
 In-game, switch to the avatar you want to set up.<br/>
 Open up Menu->Preferences/Options->BoneMenu->Avatar Stats or Avatar Mass<br/>
-Select which attribute(s) you would like to change - they should currently hold the current value for the avatar - and edit them to your liking. Note that the "set to" buttons will not update the displayed value, so just increase and decrease it once to see it.<br/>
+Select which attribute(s) you would like to change - they should currently hold the current value for the avatar - and edit them to your liking.<br/>
 Finally, click "Save stats" or "Save masses", depending on what you edited.<br/>
 Your changes will have been saved to the appropriate file(s). To see them in-game, simply swap to another avatar and back or load a new level.<br/>
 <br/>

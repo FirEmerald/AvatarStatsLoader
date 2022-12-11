@@ -4,12 +4,12 @@ using UnityEngine;
 
 namespace AvatarStatsLoader.BoneMenu
 {
-    public class EntryFloatElement : MenuElement
+    public class EntryFloatIncrementElement : MenuElement
     {
         protected readonly MelonPreferences_Entry<float> entry;
         protected readonly float increment;
 
-        public EntryFloatElement(string name, Color color, MelonPreferences_Entry<float> entry, float increment) : base(name, color)
+        public EntryFloatIncrementElement(string name, Color color, MelonPreferences_Entry<float> entry, float increment) : base(name, color)
         {
             this.entry = entry;
             this.increment = increment;
@@ -17,7 +17,17 @@ namespace AvatarStatsLoader.BoneMenu
 
         public override ElementType Type => ElementType.Value;
 
-        public override string DisplayValue => entry.Value.ToString();
+        public float GetValue()
+        {
+            return entry.Value;
+        }
+
+        public void SetValue(float value)
+        {
+            entry.Value = value;
+        }
+
+        public override string DisplayValue => "+/- " + increment.ToString();
 
         public override void OnSelectLeft()
         {

@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using BoneLib;
 using System;
 using System.Reflection;
+using AvatarStatsLoader.BoneMenu;
 
 namespace AvatarStatsLoader
 {
@@ -120,7 +121,8 @@ namespace AvatarStatsLoader
                 if (boneLibVersion.Major >= 2) //add bonemenu for bonelib 2.0.0+
                 {
                     Log("BoneLib >= 2.0.0 detected, adding to BoneMenu");
-                    MenuLoader.init();
+                    StatsBoneMenu.init();
+                    MassesBoneMenu.init();
                 }
                 else
                     Log("BoneLib < 2.0.0 detected, BoneMenu functionality disabled. Consider updating BoneLib if possible.");
@@ -208,15 +210,15 @@ namespace AvatarStatsLoader
 
         internal static void Log(string str) => instance.LoggerInstance.Msg(str);
 
-        //internal static void Log(object obj) => instance.LoggerInstance.Msg(obj?.ToString() ?? "null");
+        internal static void Log(object obj) => instance.LoggerInstance.Msg(obj?.ToString() ?? "null");
 
         internal static void Warn(string str) => instance.LoggerInstance.Warning(str);
 
-        //internal static void Warn(object obj) => instance.LoggerInstance.Warning(obj?.ToString() ?? "null");
+        internal static void Warn(object obj) => instance.LoggerInstance.Warning(obj?.ToString() ?? "null");
 
-        //internal static void Error(string str) => instance.LoggerInstance.Error(str);
+        internal static void Error(string str) => instance.LoggerInstance.Error(str);
 
-        //internal static void Error(object obj) => instance.LoggerInstance.Error(obj?.ToString() ?? "null");
+        internal static void Error(object obj) => instance.LoggerInstance.Error(obj?.ToString() ?? "null");
     }
 
     [HarmonyPatch(typeof(Avatar), "ComputeBaseStats")]
