@@ -28,12 +28,9 @@ namespace AvatarStatsLoader
             Hooking.OnSwitchAvatarPostfix += (avatar) => {
                 if (avatar != null)
                 {
-                    string name = avatar.name;
-                    if (name != "[RealHeptaRig (Marrow1)]") //don't save for empty rig
+                    if (!avatar.isEmptyRig())
                     {
-                        if (name.EndsWith("(Clone)")) //remove "(Clone)" from mod avatars
-                            name = avatar.name.Substring(0, avatar.name.Length - "(Clone)".Length);
-                        Log("Setting avatar to " + name);
+                        Log("Setting avatar to " + avatar.getName());
                         agility.DefaultValue = avatar.getDefAgility();
                         agility.Value = avatar._agility;
                         strengthUpper.DefaultValue = avatar.getDefStrengthUpper();
@@ -70,6 +67,15 @@ namespace AvatarStatsLoader
             vitality = mpCat.CreateEntry("vitality", 0f, "Vitality", "Determines how much damage an avatar takes.", dont_save_default: true);
             speed = mpCat.CreateEntry("speed", 0f, "Speed", "Determines how fast an avatar can run.", dont_save_default: true);
             intelligence = mpCat.CreateEntry("intelligence", 0f, "Intelligence", "Currently has no effect.", dont_save_default: true);
+            /*
+            LemonAction<float, float> refreshStatsAct = (prev, cur) => reloadAvatarStats();
+            agility.OnEntryValueChanged.Subscribe(refreshStatsAct, int.MaxValue);
+            strengthUpper.OnEntryValueChanged.Subscribe(refreshStatsAct, int.MaxValue);
+            strengthLower.OnEntryValueChanged.Subscribe(refreshStatsAct, int.MaxValue);
+            vitality.OnEntryValueChanged.Subscribe(refreshStatsAct, int.MaxValue);
+            speed.OnEntryValueChanged.Subscribe(refreshStatsAct, int.MaxValue)
+            intelligence.OnEntryValueChanged.Subscribe(refreshStatsAct, int.MaxValue);
+            */
             loadStats = mpCat.CreateEntry("loadStats", false, "Reload stats", "reloads the stats of the current avatar into the preferences.");
             loadStats.OnEntryValueChanged.Subscribe((prev, cur) => {
                 if (cur)
@@ -91,6 +97,14 @@ namespace AvatarStatsLoader
             massHead = mpCat.CreateEntry("massHead", 0f, "Head mass", "Head mass of the last loaded avatar.", dont_save_default: true);
             massArm = mpCat.CreateEntry("massArm", 0f, "Arm mass", "Arm mass of the last loaded avatar.", dont_save_default: true);
             massLeg = mpCat.CreateEntry("massLeg", 0f, "Leg mass", "Leg mass of the last loaded avatar.", dont_save_default: true);
+            /*
+            LemonAction<float, float> refreshMassAct = (prev, cur) => reloadAvatarMass();
+            massChest.OnEntryValueChanged.Subscribe(refreshMassAct, int.MaxValue);
+            massPelvis.OnEntryValueChanged.Subscribe(refreshMassAct, int.MaxValue);
+            massHead.OnEntryValueChanged.Subscribe(refreshMassAct, int.MaxValue);
+            massArm.OnEntryValueChanged.Subscribe(refreshMassAct, int.MaxValue);
+            massLeg.OnEntryValueChanged.Subscribe(refreshMassAct, int.MaxValue);
+            */
             loadMasses = mpCat.CreateEntry("loadMasses", false, "Reload masses", "Reloads the mass of the current avatar into the preferences.");
             loadMasses.OnEntryValueChanged.Subscribe((prev, cur) => {
                 if (cur)
@@ -131,22 +145,43 @@ namespace AvatarStatsLoader
                 Warn("Could not parse BoneLib version, not loading BoneMenu functionality");
         }
 
+        /*
+        public void reloadAvatarStats()
+        {
+            Avatar lastLoadedAvatar = Player.GetCurrentAvatar();
+            if (lastLoadedAvatar != null && !lastLoadedAvatar.getLoadingStats())
+            {
+                lastLoadedAvatar.setOverriding(true);
+                lastLoadedAvatar.RefreshBodyMeasurements();
+                lastLoadedAvatar.setOverriding(false);
+            }
+        }
+
+        public void reloadAvatarMass()
+        {
+            Avatar lastLoadedAvatar = Player.GetCurrentAvatar();
+            if (lastLoadedAvatar != null && !lastLoadedAvatar.getLoadingMass())
+            {
+                lastLoadedAvatar.setOverriding(true);
+                lastLoadedAvatar.RefreshBodyMeasurements();
+                lastLoadedAvatar.setOverriding(false);
+            }
+        }
+        */
+
         public static void SaveStatsToFile()
         {
             Avatar lastLoadedAvatar = Player.GetCurrentAvatar();
             if (lastLoadedAvatar != null)
             {
-                string name = lastLoadedAvatar.name;
-                if (name != "[RealHeptaRig (Marrow1)]") //don't save for empty rig
+                if (!lastLoadedAvatar.isEmptyRig())
                 {
-                    if (name.EndsWith("(Clone)")) //remove "(Clone)" from mod avatars
-                        name = lastLoadedAvatar.name.Substring(0, lastLoadedAvatar.name.Length - "(Clone)".Length);
                     if (!Directory.Exists(AvatarStatsMod.STATS_FOLDER))
                     {
                         DirectoryInfo info = Directory.CreateDirectory(AvatarStatsMod.STATS_FOLDER);
                         Log("Avatar stats folder did not exist, created at " + info.Name);
                     }
-                    string statsFile = AvatarStatsMod.STATS_FOLDER + "\\" + name + ".json";
+                    string statsFile = AvatarStatsMod.STATS_FOLDER + "\\" + lastLoadedAvatar.getName() + ".json";
                     Log("Saving stats to " + statsFile);
                     File.WriteAllText(statsFile, JsonConvert.SerializeObject(new AvatarStats(agility.Value, strengthUpper.Value, strengthLower.Value, vitality.Value, speed.Value, intelligence.Value)));
                 }
@@ -174,17 +209,14 @@ namespace AvatarStatsLoader
             Avatar lastLoadedAvatar = Player.GetCurrentAvatar();
             if (lastLoadedAvatar != null)
             {
-                string name = lastLoadedAvatar.name;
-                if (name != "[RealHeptaRig (Marrow1)]") //don't save for empty rig
+                if (!lastLoadedAvatar.isEmptyRig())
                 {
-                    if (name.EndsWith("(Clone)")) //remove "(Clone)" from mod avatars
-                        name = lastLoadedAvatar.name.Substring(0, lastLoadedAvatar.name.Length - "(Clone)".Length);
                     if (!Directory.Exists(AvatarStatsMod.MASS_FOLDER))
                     {
                         DirectoryInfo info = Directory.CreateDirectory(AvatarStatsMod.MASS_FOLDER);
                         AvatarStatsMod.Log("Avatar masses folder did not exist, created at " + info.Name);
                     }
-                    string massFile = AvatarStatsMod.MASS_FOLDER + "\\" + name + ".json";
+                    string massFile = AvatarStatsMod.MASS_FOLDER + "\\" + lastLoadedAvatar.getName() + ".json";
                     AvatarStatsMod.Log("Saving masses to " + massFile);
                     File.WriteAllText(massFile, JsonConvert.SerializeObject(new AvatarMass(massChest.Value, massPelvis.Value, massHead.Value, massArm.Value, massLeg.Value)));
                 }
@@ -206,8 +238,6 @@ namespace AvatarStatsLoader
             massLeg.Value = avatar._massLeg;
         }
 
-        internal static void recalculateTotalMass(Avatar avatar) => avatar._massTotal = (avatar._massChest + avatar._massPelvis + avatar._massHead + ((avatar._massArm + avatar._massLeg) * 2));
-
         internal static void Log(string str) => instance.LoggerInstance.Msg(str);
 
         internal static void Log(object obj) => instance.LoggerInstance.Msg(obj?.ToString() ?? "null");
@@ -226,22 +256,37 @@ namespace AvatarStatsLoader
     {
         public static void Postfix(Avatar __instance)
         {
-            string name = __instance.name;
-            if (name == "[RealHeptaRig (Marrow1)]") //don't load for empty rig
+            if (__instance.isEmptyRig())
                 return;
-            else if (name.EndsWith("(Clone)")) //remove "(Clone)" from mod avatars
-                name = __instance.name.Substring(0, __instance.name.Length - "(Clone)".Length);
-            __instance.setDefStats();
-            AvatarStatsMod.Log("Load stats: " + name);
-            if (Directory.Exists(AvatarStatsMod.STATS_FOLDER))
+            string name = __instance.getName();
+            /*
+            if (__instance.getOverriding())
             {
-                string statsFile = AvatarStatsMod.STATS_FOLDER + "\\" + name + ".json";
-                if (File.Exists(statsFile))
-                {
-                    AvatarStatsMod.Log("Overriding stats with values from " + statsFile);
-                    JsonConvert.DeserializeObject<AvatarStats>(File.ReadAllText(statsFile)).apply(__instance);
-                }
+                AvatarStatsMod.Log("Overriding stats for " + name + " with values from preferences.");
+                __instance._agility = AvatarStatsMod.agility.Value;
+                __instance._strengthUpper = AvatarStatsMod.strengthUpper.Value;
+                __instance._strengthUpper = AvatarStatsMod.strengthUpper.Value;
+                __instance._vitality = AvatarStatsMod.vitality.Value;
+                __instance._speed = AvatarStatsMod.speed.Value;
+                __instance._intelligence = AvatarStatsMod.intelligence.Value;
             }
+            else
+            {
+                __instance.setLoadingStats(true);
+            */
+                __instance.setDefStats();
+                AvatarStatsMod.Log("Load stats: " + name);
+                if (Directory.Exists(AvatarStatsMod.STATS_FOLDER))
+                {
+                    string statsFile = AvatarStatsMod.STATS_FOLDER + "\\" + name + ".json";
+                    if (File.Exists(statsFile))
+                    {
+                        AvatarStatsMod.Log("Overriding stats with values from " + statsFile);
+                        JsonConvert.DeserializeObject<AvatarStats>(File.ReadAllText(statsFile)).apply(__instance);
+                    }
+                }
+            //    __instance.setLoadingStats(false);
+            //}
         }
     }
     public class AvatarStats
@@ -291,22 +336,37 @@ namespace AvatarStatsLoader
     {
         public static void Postfix(Avatar __instance, float normalizeTo82)
         {
-            string name = __instance.name;
-            if (name == "[RealHeptaRig (Marrow1)]") //don't load for empty rig
+            if (__instance.isEmptyRig())
                 return;
-            else if (name.EndsWith("(Clone)")) //remove "(Clone)" from mod avatars
-                name = __instance.name.Substring(0, __instance.name.Length - "(Clone)".Length);
-            __instance.setDefMasses();
-            AvatarStatsMod.Log("Load mass: " + name);
-            if (Directory.Exists(AvatarStatsMod.MASS_FOLDER))
+            string name = __instance.getName();
+            /*
+            if (__instance.getOverriding())
             {
-                string massFile = AvatarStatsMod.MASS_FOLDER + "\\" + name + ".json";
-                if (File.Exists(massFile))
-                {
-                    AvatarStatsMod.Log("Overriding mass with values from " + massFile);
-                    JsonConvert.DeserializeObject<AvatarMass>(File.ReadAllText(massFile)).apply(__instance);
-                }
+                AvatarStatsMod.Log("Overriding mass for " + name + " with values from preferences.");
+                __instance._massChest = AvatarStatsMod.massChest.Value;
+                __instance._massPelvis = AvatarStatsMod.massPelvis.Value;
+                __instance._massHead = AvatarStatsMod.massHead.Value;
+                __instance._massArm = AvatarStatsMod.massArm.Value;
+                __instance._massLeg = AvatarStatsMod.massLeg.Value;
+                __instance.recalculateTotalMass();
             }
+            else
+            {
+                __instance.setLoadingMass(true);
+            */
+            __instance.setDefMasses();
+                AvatarStatsMod.Log("Load mass: " + name);
+                if (Directory.Exists(AvatarStatsMod.MASS_FOLDER))
+                {
+                    string massFile = AvatarStatsMod.MASS_FOLDER + "\\" + name + ".json";
+                    if (File.Exists(massFile))
+                    {
+                        AvatarStatsMod.Log("Overriding mass with values from " + massFile);
+                        JsonConvert.DeserializeObject<AvatarMass>(File.ReadAllText(massFile)).apply(__instance);
+                    }
+                }
+            //    __instance.setLoadingMass(false);
+            //}
         }
     }
 
@@ -345,7 +405,7 @@ namespace AvatarStatsLoader
             avatar._massHead = massHead;
             avatar._massArm = massArm;
             avatar._massLeg = massLeg;
-            AvatarStatsMod.recalculateTotalMass(avatar);
+            avatar.recalculateTotalMass();
         }
     }
 }

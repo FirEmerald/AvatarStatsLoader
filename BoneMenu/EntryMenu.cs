@@ -39,20 +39,12 @@ namespace AvatarStatsLoader.BoneMenu
         {
             foreach (UIValueField obj in GameObject.FindObjectsOfType<UIValueField>())
             {
-                //AvatarStatsMod.Log("test 2");
-                //AvatarStatsMod.Log(obj.name);
-                //AvatarStatsMod.Log(elementField);
-                //AvatarStatsMod.Log(elementField.GetValue(obj));
                 //if (elementField.GetValue(obj) == value)
                 if (obj.NameText.text == value.Name)
                 {
-                    //AvatarStatsMod.Log("test 3");
                     obj.SetText(value.Name, value.DisplayValue);
-                    //AvatarStatsMod.Log("test 4");
                 }
-                //AvatarStatsMod.Log("test 5");
             }
-            //AvatarStatsMod.Log("test 6");
         }
     }
 }
