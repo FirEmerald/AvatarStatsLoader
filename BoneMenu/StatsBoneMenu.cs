@@ -13,12 +13,12 @@ namespace AvatarStatsLoader.BoneMenu
         public static void init()
         {
             menu = MenuManager.CreateCategory("Avatar Stats", "ffffff");
-            agility = new EntryMenu(menu, "Agility", () => Player.GetCurrentAvatar()._agility, AvatarStatsMod.agility);
-            strengthUpper = new EntryMenu(menu, "Strength Upper", () => Player.GetCurrentAvatar()._strengthUpper, AvatarStatsMod.strengthUpper);
-            strengthLower = new EntryMenu(menu, "Strength Lower", () => Player.GetCurrentAvatar()._strengthLower, AvatarStatsMod.strengthLower);
-            vitality = new EntryMenu(menu, "Vitality", () => Player.GetCurrentAvatar()._vitality, AvatarStatsMod.vitality);
-            speed = new EntryMenu(menu, "Speed", () => Player.GetCurrentAvatar()._speed, AvatarStatsMod.speed);
-            intelligence = new EntryMenu(menu, "Intelligence", () => Player.GetCurrentAvatar()._intelligence, AvatarStatsMod.intelligence);
+            agility = new EntryMenu(menu, "Agility", () => Player.GetCurrentAvatar().getLoadAgility(), AvatarStatsMod.agility);
+            strengthUpper = new EntryMenu(menu, "Strength Upper", () => Player.GetCurrentAvatar().getLoadStrengthUpper(), AvatarStatsMod.strengthUpper);
+            strengthLower = new EntryMenu(menu, "Strength Lower", () => Player.GetCurrentAvatar().getLoadStrengthLower(), AvatarStatsMod.strengthLower);
+            vitality = new EntryMenu(menu, "Vitality", () => Player.GetCurrentAvatar().getLoadVitality(), AvatarStatsMod.vitality);
+            speed = new EntryMenu(menu, "Speed", () => Player.GetCurrentAvatar().getLoadSpeed(), AvatarStatsMod.speed);
+            intelligence = new EntryMenu(menu, "Intelligence", () => Player.GetCurrentAvatar().getLoadIntelligence(), AvatarStatsMod.intelligence);
             saveStats = menu.CreateFunctionElement("Save stats", "ffffff", () => AvatarStatsMod.SaveStatsToFile());
         }
     }

@@ -14,7 +14,7 @@ namespace AvatarStatsLoader.BoneMenu
         public readonly EntryFloatIncrementElement incrementPointOne, incrementPointZeroOne, incrementPointZeroZeroOne;
         public readonly FunctionElement setToOne, loadFromAvatar, loadFromAvatarCalculated;
 
-        public EntryMenu(MenuCategory parentMenu, string name, Func<float> getFromAvatar, MelonPreferences_Entry<float> entry)
+        public EntryMenu(MenuCategory parentMenu, string name, Func<float> getFromLoaded, MelonPreferences_Entry<float> entry)
         {
             menu = parentMenu.CreateCategory(name, "ffffff");
             value = menu.CreateEntryFloatElement("value", "ffffff", entry, 1f);
@@ -24,13 +24,13 @@ namespace AvatarStatsLoader.BoneMenu
             setToOne = menu.CreateFunctionElement("Set to 1.0", "ffffff", () => {
                 entry.Value = 1.0f;
             });
-            loadFromAvatar = menu.CreateFunctionElement("Load from avatar's current value", "ffffff", () => {
-                entry.Value = getFromAvatar.Invoke();
+            loadFromAvatar = menu.CreateFunctionElement("Load from avatar's loaded value", "ffffff", () => {
+                entry.Value = getFromLoaded.Invoke();
             });
             loadFromAvatarCalculated = menu.CreateFunctionElement("Load from avatar's computed value", "ffffff", () => {
                 entry.ResetToDefault();
             });
-            entry.OnEntryValueChanged.Subscribe((prev, cur) => refreshDisplayValue());
+            entry.OnEntryValueChanged.Subscribe((prev, cur) => refreshDisplayValue(), int.MaxValue);
         }
 
         //private readonly FieldInfo elementField = typeof(UIValueField).GetField("element", BindingFlags.NonPublic | BindingFlags.Instance);

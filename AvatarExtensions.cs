@@ -1,12 +1,15 @@
 ﻿using SLZ.VRMK;
+using BoneLib;
 
 namespace AvatarStatsLoader
 {
     public static class AvatarExtensions
     {
         private static float defAgility = 0, defStrengthUpper = 0, defStrengthLower = 0, defVitality = 0, defSpeed = 0, defIntelligence = 0;
+        private static float loadAgility = 0, loadStrengthUpper = 0, loadStrengthLower = 0, loadVitality = 0, loadSpeed = 0, loadIntelligence = 0;
         private static float defMassChest = 0, defMassPelvis = 0, defMassHead = 0, defMassArm = 0, defMassLeg = 0;
-        //private static bool isLoadingStats = false, isLoadingMass = false, isOverriding = false;
+        private static float loadMassChest = 0, loadMassPelvis = 0, loadMassHead = 0, loadMassArm = 0, loadMassLeg = 0;
+        private static bool isLoading = false, isOverriding = false;
 
         public static void setDefStats(this Avatar avatar)
         {
@@ -48,6 +51,46 @@ namespace AvatarStatsLoader
             return defIntelligence;
         }
 
+        public static void setLoadStats(this Avatar avatar)
+        {
+            loadAgility = avatar._agility;
+            loadStrengthUpper = avatar._strengthUpper;
+            loadStrengthLower = avatar._strengthLower;
+            loadVitality = avatar._vitality;
+            loadSpeed = avatar._speed;
+            loadIntelligence = avatar._intelligence;
+        }
+
+        public static float getLoadAgility(this Avatar avatar)
+        {
+            return loadAgility;
+        }
+
+        public static float getLoadStrengthUpper(this Avatar avatar)
+        {
+            return loadStrengthUpper;
+        }
+
+        public static float getLoadStrengthLower(this Avatar avatar)
+        {
+            return loadStrengthLower;
+        }
+
+        public static float getLoadVitality(this Avatar avatar)
+        {
+            return loadVitality;
+        }
+
+        public static float getLoadSpeed(this Avatar avatar)
+        {
+            return loadSpeed;
+        }
+
+        public static float getLoadIntelligence(this Avatar avatar)
+        {
+            return loadIntelligence;
+        }
+
         public static void setDefMasses(this Avatar avatar)
         {
             defMassChest = avatar._massChest;
@@ -82,25 +125,48 @@ namespace AvatarStatsLoader
             return defMassLeg;
         }
 
-        /*
-        public static bool getLoadingStats(this Avatar avatar)
+        public static void setLoadMasses(this Avatar avatar)
         {
-            return isLoadingStats;
+            loadMassChest = avatar._massChest;
+            loadMassPelvis = avatar._massPelvis;
+            loadMassHead = avatar._massHead;
+            loadMassArm = avatar._massArm;
+            loadMassLeg = avatar._massLeg;
         }
 
-        public static void setLoadingStats(this Avatar avatar, bool val)
+        public static float getLoadMassChest(this Avatar avatar)
         {
-            isLoadingStats = val;
+            return loadMassChest;
         }
 
-        public static bool getLoadingMass(this Avatar avatar)
+        public static float getLoadMassPelvis(this Avatar avatar)
         {
-            return isLoadingMass;
+            return loadMassPelvis;
         }
 
-        public static void setLoadingMass(this Avatar avatar, bool val)
+        public static float getLoadMassHead(this Avatar avatar)
         {
-            isLoadingMass = val;
+            return loadMassHead;
+        }
+
+        public static float getLoadMassArm(this Avatar avatar)
+        {
+            return loadMassArm;
+        }
+
+        public static float getLoadMassLeg(this Avatar avatar)
+        {
+            return loadMassLeg;
+        }
+
+        public static bool getLoading(this Avatar avatar)
+        {
+            return isLoading;
+        }
+
+        public static void setLoading(this Avatar avatar, bool val)
+        {
+            isLoading = val;
         }
 
         public static bool getOverriding(this Avatar avatar)
@@ -112,7 +178,6 @@ namespace AvatarStatsLoader
         {
             isOverriding = val;
         }
-        */
 
         public static bool isEmptyRig(this Avatar avatar)
         {

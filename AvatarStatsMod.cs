@@ -28,9 +28,10 @@ namespace AvatarStatsLoader
             Hooking.OnSwitchAvatarPostfix += (avatar) => {
                 if (avatar != null)
                 {
-                    if (!avatar.isEmptyRig())
+                    if (!avatar.isEmptyRig() && !avatar.getOverriding())
                     {
                         Log("Setting avatar to " + avatar.getName());
+                        avatar.setLoading(true);
                         agility.DefaultValue = avatar.getDefAgility();
                         agility.Value = avatar._agility;
                         strengthUpper.DefaultValue = avatar.getDefStrengthUpper();
@@ -53,6 +54,7 @@ namespace AvatarStatsLoader
                         massArm.Value = avatar._massArm;
                         massLeg.DefaultValue = avatar.getDefMassLeg();
                         massLeg.Value = avatar._massLeg;
+                        avatar.setLoading(false);
                     }
                 }
                 else
@@ -60,6 +62,7 @@ namespace AvatarStatsLoader
                     Log("Setting avatar to null");
                 }
             };
+            LemonAction<float, float> refreshAvatarAct = (prev, cur) => refreshAvatarStats();
             mpCat = MelonPreferences.CreateCategory(nameof(AvatarStatsMod));
             agility = mpCat.CreateEntry("agility", 0f, "Agility", "Determines how fast an avatar can acclerate or decelerate.", dont_save_default:true);
             strengthUpper = mpCat.CreateEntry("strengthUpper", 0f, "Arm strength", "Determines the arm strength, affecting weapon holding and climbing.", dont_save_default: true);
@@ -67,16 +70,13 @@ namespace AvatarStatsLoader
             vitality = mpCat.CreateEntry("vitality", 0f, "Vitality", "Determines how much damage an avatar takes.", dont_save_default: true);
             speed = mpCat.CreateEntry("speed", 0f, "Speed", "Determines how fast an avatar can run.", dont_save_default: true);
             intelligence = mpCat.CreateEntry("intelligence", 0f, "Intelligence", "Currently has no effect.", dont_save_default: true);
-            /*
-            LemonAction<float, float> refreshStatsAct = (prev, cur) => reloadAvatarStats();
-            agility.OnEntryValueChanged.Subscribe(refreshStatsAct, int.MaxValue);
-            strengthUpper.OnEntryValueChanged.Subscribe(refreshStatsAct, int.MaxValue);
-            strengthLower.OnEntryValueChanged.Subscribe(refreshStatsAct, int.MaxValue);
-            vitality.OnEntryValueChanged.Subscribe(refreshStatsAct, int.MaxValue);
-            speed.OnEntryValueChanged.Subscribe(refreshStatsAct, int.MaxValue)
-            intelligence.OnEntryValueChanged.Subscribe(refreshStatsAct, int.MaxValue);
-            */
-            loadStats = mpCat.CreateEntry("loadStats", false, "Reload stats", "reloads the stats of the current avatar into the preferences.");
+            agility.OnEntryValueChanged.Subscribe(refreshAvatarAct, int.MaxValue);
+            strengthUpper.OnEntryValueChanged.Subscribe(refreshAvatarAct, int.MaxValue);
+            strengthLower.OnEntryValueChanged.Subscribe(refreshAvatarAct, int.MaxValue);
+            vitality.OnEntryValueChanged.Subscribe(refreshAvatarAct, int.MaxValue);
+            speed.OnEntryValueChanged.Subscribe(refreshAvatarAct, int.MaxValue);
+            intelligence.OnEntryValueChanged.Subscribe(refreshAvatarAct, int.MaxValue);
+            loadStats = mpCat.CreateEntry("loadStats", false, "Reload stats", "loads the previously loaded stats of the current avatar into the preferences.");
             loadStats.OnEntryValueChanged.Subscribe((prev, cur) => {
                 if (cur)
                 {
@@ -97,14 +97,11 @@ namespace AvatarStatsLoader
             massHead = mpCat.CreateEntry("massHead", 0f, "Head mass", "Head mass of the last loaded avatar.", dont_save_default: true);
             massArm = mpCat.CreateEntry("massArm", 0f, "Arm mass", "Arm mass of the last loaded avatar.", dont_save_default: true);
             massLeg = mpCat.CreateEntry("massLeg", 0f, "Leg mass", "Leg mass of the last loaded avatar.", dont_save_default: true);
-            /*
-            LemonAction<float, float> refreshMassAct = (prev, cur) => reloadAvatarMass();
-            massChest.OnEntryValueChanged.Subscribe(refreshMassAct, int.MaxValue);
-            massPelvis.OnEntryValueChanged.Subscribe(refreshMassAct, int.MaxValue);
-            massHead.OnEntryValueChanged.Subscribe(refreshMassAct, int.MaxValue);
-            massArm.OnEntryValueChanged.Subscribe(refreshMassAct, int.MaxValue);
-            massLeg.OnEntryValueChanged.Subscribe(refreshMassAct, int.MaxValue);
-            */
+            massChest.OnEntryValueChanged.Subscribe(refreshAvatarAct, int.MaxValue);
+            massPelvis.OnEntryValueChanged.Subscribe(refreshAvatarAct, int.MaxValue);
+            massHead.OnEntryValueChanged.Subscribe(refreshAvatarAct, int.MaxValue);
+            massArm.OnEntryValueChanged.Subscribe(refreshAvatarAct, int.MaxValue);
+            massLeg.OnEntryValueChanged.Subscribe(refreshAvatarAct, int.MaxValue);
             loadMasses = mpCat.CreateEntry("loadMasses", false, "Reload masses", "Reloads the mass of the current avatar into the preferences.");
             loadMasses.OnEntryValueChanged.Subscribe((prev, cur) => {
                 if (cur)
@@ -145,29 +142,19 @@ namespace AvatarStatsLoader
                 Warn("Could not parse BoneLib version, not loading BoneMenu functionality");
         }
 
-        /*
-        public void reloadAvatarStats()
+        
+        public void refreshAvatarStats()
         {
             Avatar lastLoadedAvatar = Player.GetCurrentAvatar();
-            if (lastLoadedAvatar != null && !lastLoadedAvatar.getLoadingStats())
+            if (lastLoadedAvatar != null && !lastLoadedAvatar.getLoading())
             {
+                Log(lastLoadedAvatar.getName());
                 lastLoadedAvatar.setOverriding(true);
-                lastLoadedAvatar.RefreshBodyMeasurements();
+                Player.rigManager.SwitchAvatar(lastLoadedAvatar);
                 lastLoadedAvatar.setOverriding(false);
             }
         }
-
-        public void reloadAvatarMass()
-        {
-            Avatar lastLoadedAvatar = Player.GetCurrentAvatar();
-            if (lastLoadedAvatar != null && !lastLoadedAvatar.getLoadingMass())
-            {
-                lastLoadedAvatar.setOverriding(true);
-                lastLoadedAvatar.RefreshBodyMeasurements();
-                lastLoadedAvatar.setOverriding(false);
-            }
-        }
-        */
+        
 
         public static void SaveStatsToFile()
         {
@@ -259,21 +246,19 @@ namespace AvatarStatsLoader
             if (__instance.isEmptyRig())
                 return;
             string name = __instance.getName();
-            /*
+            
             if (__instance.getOverriding())
             {
                 AvatarStatsMod.Log("Overriding stats for " + name + " with values from preferences.");
                 __instance._agility = AvatarStatsMod.agility.Value;
                 __instance._strengthUpper = AvatarStatsMod.strengthUpper.Value;
-                __instance._strengthUpper = AvatarStatsMod.strengthUpper.Value;
+                __instance._strengthLower = AvatarStatsMod.strengthLower.Value;
                 __instance._vitality = AvatarStatsMod.vitality.Value;
                 __instance._speed = AvatarStatsMod.speed.Value;
                 __instance._intelligence = AvatarStatsMod.intelligence.Value;
             }
             else
             {
-                __instance.setLoadingStats(true);
-            */
                 __instance.setDefStats();
                 AvatarStatsMod.Log("Load stats: " + name);
                 if (Directory.Exists(AvatarStatsMod.STATS_FOLDER))
@@ -285,8 +270,8 @@ namespace AvatarStatsLoader
                         JsonConvert.DeserializeObject<AvatarStats>(File.ReadAllText(statsFile)).apply(__instance);
                     }
                 }
-            //    __instance.setLoadingStats(false);
-            //}
+                __instance.setLoadStats();
+            }
         }
     }
     public class AvatarStats
@@ -339,7 +324,6 @@ namespace AvatarStatsLoader
             if (__instance.isEmptyRig())
                 return;
             string name = __instance.getName();
-            /*
             if (__instance.getOverriding())
             {
                 AvatarStatsMod.Log("Overriding mass for " + name + " with values from preferences.");
@@ -352,9 +336,7 @@ namespace AvatarStatsLoader
             }
             else
             {
-                __instance.setLoadingMass(true);
-            */
-            __instance.setDefMasses();
+                __instance.setDefMasses();
                 AvatarStatsMod.Log("Load mass: " + name);
                 if (Directory.Exists(AvatarStatsMod.MASS_FOLDER))
                 {
@@ -365,8 +347,8 @@ namespace AvatarStatsLoader
                         JsonConvert.DeserializeObject<AvatarMass>(File.ReadAllText(massFile)).apply(__instance);
                     }
                 }
-            //    __instance.setLoadingMass(false);
-            //}
+                __instance.setLoadMasses();
+            }
         }
     }
 
