@@ -20,18 +20,20 @@ namespace AvatarStatsLoader
         internal static MelonPreferences_Entry<bool> loadStats, saveStats;
         internal static MelonPreferences_Entry<float> massChest, massPelvis, massHead, massArm, massLeg;
         internal static MelonPreferences_Entry<bool> loadMasses, saveMasses;
+        internal static Avatar currentAvatar = null; //we cannot use BoneLib's hook for this now
+        internal static Boolean isLoadingAvatarValues = false;
 
         public AvatarStatsMod() => instance = this;
 
         public override void OnInitializeMelon()
         {
             Hooking.OnSwitchAvatarPostfix += (avatar) => {
-                if (avatar != null)
+                if (avatar != null && !avatar.isEmptyRig())
                 {
-                    if (!avatar.isEmptyRig() && !avatar.getOverriding())
+                    if (avatar != currentAvatar)
                     {
                         Log("Setting avatar to " + avatar.getName());
-                        avatar.setLoading(true);
+                        isLoadingAvatarValues = true;
                         agility.DefaultValue = avatar.getDefAgility();
                         agility.Value = avatar._agility;
                         strengthUpper.DefaultValue = avatar.getDefStrengthUpper();
@@ -54,12 +56,14 @@ namespace AvatarStatsLoader
                         massArm.Value = avatar._massArm;
                         massLeg.DefaultValue = avatar.getDefMassLeg();
                         massLeg.Value = avatar._massLeg;
-                        avatar.setLoading(false);
+                        currentAvatar = avatar;
+                        isLoadingAvatarValues = false;
                     }
                 }
                 else
                 {
                     Log("Setting avatar to null");
+                    currentAvatar = null;
                 }
             };
             LemonAction<float, float> refreshAvatarAct = (prev, cur) => refreshAvatarStats();
@@ -145,40 +149,42 @@ namespace AvatarStatsLoader
         
         public void refreshAvatarStats()
         {
-            Avatar lastLoadedAvatar = Player.GetCurrentAvatar();
-            if (lastLoadedAvatar != null && !lastLoadedAvatar.getLoading())
+            if (isLoadingAvatarValues) return; //do not refresh when loading
+            if (currentAvatar != null)
             {
-                Log(lastLoadedAvatar.getName());
-                lastLoadedAvatar.setOverriding(true);
-                Player.rigManager.SwitchAvatar(lastLoadedAvatar);
-                lastLoadedAvatar.setOverriding(false);
+                Log("Refreshing " + currentAvatar.getName());
+                //Player.rigManager.ava
+                //Player.rigManager.onAvatarSwapped.Invoke(); //no change
+                //Player.GetPhysicsRig().SetAvatar(currentAvatar); //no change
+                //Player.controllerRig.SetAvatar(currentAvatar);
+                //Player.physicsRig.SetAvatar(currentAvatar);
+                //Player.rigManager._avatarDirty = true; //initially loaded avatar gets reset to polyblank for some reason. switching to a different avatar and back fixes it.
+                //Player.rigManager.SwitchAvatar(currentAvatar); //same effect as above whilst calling more code
+                Player.rigManager.SwapAvatar(currentAvatar); //same effect as above whilst calling more code
+                //Player.rigManager.SwapAvatarCrate(Player.rigManager.AvatarCrate.Barcode, false, null); re-loads entire avatar, preventing overrides from applying
             }
         }
         
 
         public static void SaveStatsToFile()
         {
-            Avatar lastLoadedAvatar = Player.GetCurrentAvatar();
-            if (lastLoadedAvatar != null)
+            if (currentAvatar != null)
             {
-                if (!lastLoadedAvatar.isEmptyRig())
+                if (!Directory.Exists(AvatarStatsMod.STATS_FOLDER))
                 {
-                    if (!Directory.Exists(AvatarStatsMod.STATS_FOLDER))
-                    {
-                        DirectoryInfo info = Directory.CreateDirectory(AvatarStatsMod.STATS_FOLDER);
-                        Log("Avatar stats folder did not exist, created at " + info.Name);
-                    }
-                    string statsFile = AvatarStatsMod.STATS_FOLDER + "\\" + lastLoadedAvatar.getName() + ".json";
-                    Log("Saving stats to " + statsFile);
-                    File.WriteAllText(statsFile, JsonConvert.SerializeObject(new AvatarStats(agility.Value, strengthUpper.Value, strengthLower.Value, vitality.Value, speed.Value, intelligence.Value)));
+                    DirectoryInfo info = Directory.CreateDirectory(AvatarStatsMod.STATS_FOLDER);
+                    Log("Avatar stats folder did not exist, created at " + info.Name);
                 }
+                string statsFile = AvatarStatsMod.STATS_FOLDER + "\\" + currentAvatar.getName() + ".json";
+                Log("Saving stats to " + statsFile);
+                File.WriteAllText(statsFile, JsonConvert.SerializeObject(new AvatarStats(agility.Value, strengthUpper.Value, strengthLower.Value, vitality.Value, speed.Value, intelligence.Value)));
             }
         }
 
         internal static void loadStatValues()
         {
-            Avatar lastLoadedAvatar = Player.GetCurrentAvatar();
-            if (lastLoadedAvatar != null) loadStatValues(lastLoadedAvatar);
+            if (currentAvatar != null)
+                loadStatValues(currentAvatar);
         }
 
         internal static void loadStatValues(Avatar avatar)
@@ -193,27 +199,23 @@ namespace AvatarStatsLoader
 
         public static void SaveMassesToFile()
         {
-            Avatar lastLoadedAvatar = Player.GetCurrentAvatar();
-            if (lastLoadedAvatar != null)
+            if (currentAvatar != null)
             {
-                if (!lastLoadedAvatar.isEmptyRig())
+                if (!Directory.Exists(AvatarStatsMod.MASS_FOLDER))
                 {
-                    if (!Directory.Exists(AvatarStatsMod.MASS_FOLDER))
-                    {
-                        DirectoryInfo info = Directory.CreateDirectory(AvatarStatsMod.MASS_FOLDER);
-                        AvatarStatsMod.Log("Avatar masses folder did not exist, created at " + info.Name);
-                    }
-                    string massFile = AvatarStatsMod.MASS_FOLDER + "\\" + lastLoadedAvatar.getName() + ".json";
-                    AvatarStatsMod.Log("Saving masses to " + massFile);
-                    File.WriteAllText(massFile, JsonConvert.SerializeObject(new AvatarMass(massChest.Value, massPelvis.Value, massHead.Value, massArm.Value, massLeg.Value)));
+                    DirectoryInfo info = Directory.CreateDirectory(AvatarStatsMod.MASS_FOLDER);
+                    AvatarStatsMod.Log("Avatar masses folder did not exist, created at " + info.Name);
                 }
+                string massFile = AvatarStatsMod.MASS_FOLDER + "\\" + currentAvatar.getName() + ".json";
+                AvatarStatsMod.Log("Saving masses to " + massFile);
+                File.WriteAllText(massFile, JsonConvert.SerializeObject(new AvatarMass(massChest.Value, massPelvis.Value, massHead.Value, massArm.Value, massLeg.Value)));
             }
         }
 
         internal static void loadMassValues()
         {
-            Avatar lastLoadedAvatar = Player.GetCurrentAvatar();
-            if (lastLoadedAvatar != null) loadMassValues(lastLoadedAvatar);
+            if (currentAvatar != null)
+                loadMassValues(currentAvatar);
         }
 
         internal static void loadMassValues(Avatar avatar)
@@ -246,8 +248,7 @@ namespace AvatarStatsLoader
             if (__instance.isEmptyRig())
                 return;
             string name = __instance.getName();
-            
-            if (__instance.getOverriding())
+            if (__instance == AvatarStatsMod.currentAvatar)
             {
                 AvatarStatsMod.Log("Overriding stats for " + name + " with values from preferences.");
                 __instance._agility = AvatarStatsMod.agility.Value;
@@ -324,7 +325,7 @@ namespace AvatarStatsLoader
             if (__instance.isEmptyRig())
                 return;
             string name = __instance.getName();
-            if (__instance.getOverriding())
+            if (__instance == AvatarStatsMod.currentAvatar)
             {
                 AvatarStatsMod.Log("Overriding mass for " + name + " with values from preferences.");
                 __instance._massChest = AvatarStatsMod.massChest.Value;

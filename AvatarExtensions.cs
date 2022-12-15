@@ -9,7 +9,6 @@ namespace AvatarStatsLoader
         private static float loadAgility = 0, loadStrengthUpper = 0, loadStrengthLower = 0, loadVitality = 0, loadSpeed = 0, loadIntelligence = 0;
         private static float defMassChest = 0, defMassPelvis = 0, defMassHead = 0, defMassArm = 0, defMassLeg = 0;
         private static float loadMassChest = 0, loadMassPelvis = 0, loadMassHead = 0, loadMassArm = 0, loadMassLeg = 0;
-        private static bool isLoading = false, isOverriding = false;
 
         public static void setDefStats(this Avatar avatar)
         {
@@ -157,26 +156,6 @@ namespace AvatarStatsLoader
         public static float getLoadMassLeg(this Avatar avatar)
         {
             return loadMassLeg;
-        }
-
-        public static bool getLoading(this Avatar avatar)
-        {
-            return isLoading;
-        }
-
-        public static void setLoading(this Avatar avatar, bool val)
-        {
-            isLoading = val;
-        }
-
-        public static bool getOverriding(this Avatar avatar)
-        {
-            return isOverriding;
-        }
-
-        public static void setOverriding(this Avatar avatar, bool val)
-        {
-            isOverriding = val;
         }
 
         public static bool isEmptyRig(this Avatar avatar)
