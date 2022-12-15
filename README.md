@@ -7,19 +7,19 @@ AvatarStatsLoader loads customized avatar stats from "\<Game directory\>\\UserDa
 <br/>
 # Setting up custom stats using BoneLib 2.0.0 or newer using the BoneMenu
 In-game, switch to the avatar you want to set up.<br/>
+**IMPORTANT: DO NOT ATTEMPT TO CHANGE STATS AFTER LOADING A LEVEL (INCLUDING LOADING THE GAME) BEFORE SWAPPING AVATARS AT LEAST ONCE. THERE'S A BUG WHERE DOING SO PUTS YOU INTO A POLYBLANK**
 Open up Menu->Preferences/Options->BoneMenu->Avatar Stats or Avatar Mass<br/>
-Select which attribute(s) you would like to change - they should currently hold the current value for the avatar - and edit them to your liking.<br/>
-Finally, click "Save stats" or "Save masses", depending on what you edited.<br/>
-Your changes will have been saved to the appropriate file(s). To see them in-game, simply swap to another avatar and back or load a new level.<br/>
+Select which attribute(s) you would like to change - they should hold the current value for the avatar - and edit them to your liking.<br/>
+Finally, if you want the changes to persist when you next load this avatar, click "Save stats" or "Save masses", depending on what you editet.<br/>
 <br/>
 <br/>
 # Setting up custom stats using [MelonPreferencesManager](https://github.com/sinai-dev/MelonPreferencesManager)
 In-game, switch to the avatar you want to set up.<br/>
+**IMPORTANT: DO NOT ATTEMPT TO CHANGE STATS AFTER LOADING A LEVEL (INCLUDING LOADING THE GAME) BEFORE SWAPPING AVATARS AT LEAST ONCE. THERE'S A BUG WHERE DOING SO PUTS YOU INTO A POLYBLANK**
 Open up the preferences manager and navigate to the AvatarStatsMod options.<br/>
 The options will have been populated with the current values for the avatar.<br/>
 Edit any values to your liking, and then click "Save preferences" again. Use the "default" button to reset any values to the avatar's normally calculated value.<br/>
-Finally, check "Save stats" and/or "Save masses", depending on what you edited, and click "Save Preferences".<br/>
-Your changes will have been saved to the appropriate file(s). To see them in-game, simply swap to another avatar and back or load a new level.<br/>
+Finally, if you want the changes to persist when you next load this avatar, check "Save stats" and/or "Save masses", depending on what you edited, and click "Save Preferences".<br/>
 <br/>
 <br/>
 # A breakdown of the the different stats and what they do:<br/>
