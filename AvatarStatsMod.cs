@@ -12,8 +12,8 @@ namespace AvatarStatsLoader
 {
     public class AvatarStatsMod : MelonMod
     {
-        internal static readonly string STATS_FOLDER = MelonUtils.UserDataDirectory + "\\AvatarStats";
-        internal static readonly string MASS_FOLDER = MelonUtils.UserDataDirectory + "\\AvatarMass";
+        internal static readonly string STATS_FOLDER = Path.Combine(MelonUtils.UserDataDirectory, "AvatarStats");
+        internal static readonly string MASS_FOLDER = Path.Combine(MelonUtils.UserDataDirectory, "AvatarMass");
         internal static AvatarStatsMod instance;
         internal static MelonPreferences_Category mpCat;
         internal static MelonPreferences_Entry<float> agility, strengthUpper, strengthLower, vitality, speed, intelligence;
@@ -176,6 +176,7 @@ namespace AvatarStatsLoader
                     Log("Avatar stats folder did not exist, created at " + info.Name);
                 }
                 string statsFile = AvatarStatsMod.STATS_FOLDER + "\\" + currentAvatar.getName() + ".json";
+                //string statsFile = AvatarStatsMod.STATS_FOLDER + "\\" + Player.rigManager.AvatarCrate.Barcode.ID + ".json";
                 Log("Saving stats to " + statsFile);
                 File.WriteAllText(statsFile, JsonConvert.SerializeObject(new AvatarStats(agility.Value, strengthUpper.Value, strengthLower.Value, vitality.Value, speed.Value, intelligence.Value)));
             }
