@@ -175,7 +175,7 @@ namespace AvatarStatsLoader
                     DirectoryInfo info = Directory.CreateDirectory(AvatarStatsMod.STATS_FOLDER);
                     Log("Avatar stats folder did not exist, created at " + info.Name);
                 }
-                string statsFile = AvatarStatsMod.STATS_FOLDER + "\\" + currentAvatar.getName() + ".json";
+                string statsFile = Path.Combine(AvatarStatsMod.STATS_FOLDER, currentAvatar.getName() + ".json");
                 //string statsFile = AvatarStatsMod.STATS_FOLDER + "\\" + Player.rigManager.AvatarCrate.Barcode.ID + ".json";
                 Log("Saving stats to " + statsFile);
                 File.WriteAllText(statsFile, JsonConvert.SerializeObject(new AvatarStats(agility.Value, strengthUpper.Value, strengthLower.Value, vitality.Value, speed.Value, intelligence.Value)));
@@ -207,7 +207,7 @@ namespace AvatarStatsLoader
                     DirectoryInfo info = Directory.CreateDirectory(AvatarStatsMod.MASS_FOLDER);
                     AvatarStatsMod.Log("Avatar masses folder did not exist, created at " + info.Name);
                 }
-                string massFile = AvatarStatsMod.MASS_FOLDER + "\\" + currentAvatar.getName() + ".json";
+                string massFile = Path.Combine(AvatarStatsMod.MASS_FOLDER, currentAvatar.getName() + ".json");
                 AvatarStatsMod.Log("Saving masses to " + massFile);
                 File.WriteAllText(massFile, JsonConvert.SerializeObject(new AvatarMass(massChest.Value, massPelvis.Value, massHead.Value, massArm.Value, massLeg.Value)));
             }
@@ -265,7 +265,7 @@ namespace AvatarStatsLoader
                 AvatarStatsMod.Log("Load stats: " + name);
                 if (Directory.Exists(AvatarStatsMod.STATS_FOLDER))
                 {
-                    string statsFile = AvatarStatsMod.STATS_FOLDER + "\\" + name + ".json";
+                    string statsFile = Path.Combine(AvatarStatsMod.STATS_FOLDER, name + ".json");
                     if (File.Exists(statsFile))
                     {
                         AvatarStatsMod.Log("Overriding stats with values from " + statsFile);
@@ -342,7 +342,7 @@ namespace AvatarStatsLoader
                 AvatarStatsMod.Log("Load mass: " + name);
                 if (Directory.Exists(AvatarStatsMod.MASS_FOLDER))
                 {
-                    string massFile = AvatarStatsMod.MASS_FOLDER + "\\" + name + ".json";
+                    string massFile = Path.Combine(AvatarStatsMod.MASS_FOLDER, ".json");
                     if (File.Exists(massFile))
                     {
                         AvatarStatsMod.Log("Overriding mass with values from " + massFile);
