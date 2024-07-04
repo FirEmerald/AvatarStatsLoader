@@ -1,19 +1,20 @@
 ﻿using MelonLoader;
 using HarmonyLib;
-using SLZ.VRMK;
+using Il2CppSLZ.VRMK;
 using Il2CppSystem.IO;
 using Newtonsoft.Json;
 using BoneLib;
 using System;
 using System.Reflection;
 using AvatarStatsLoader.BoneMenu;
+using MelonLoader.Utils;
 
 namespace AvatarStatsLoader
 {
     public class AvatarStatsMod : MelonMod
     {
-        internal static readonly string STATS_FOLDER = Path.Combine(MelonUtils.UserDataDirectory, "AvatarStats");
-        internal static readonly string MASS_FOLDER = Path.Combine(MelonUtils.UserDataDirectory, "AvatarMass");
+        internal static readonly string STATS_FOLDER = Path.Combine(MelonEnvironment.UserDataDirectory, "AvatarStats");
+        internal static readonly string MASS_FOLDER = Path.Combine(MelonEnvironment.UserDataDirectory, "AvatarMass");
         internal static AvatarStatsMod instance;
         internal static MelonPreferences_Category mpCat;
         internal static MelonPreferences_Entry<float> agility, strengthUpper, strengthLower, vitality, speed, intelligence;

@@ -1,5 +1,4 @@
-﻿using SLZ.VRMK;
-using BoneLib;
+﻿using Il2CppSLZ.VRMK;
 
 namespace AvatarStatsLoader
 {

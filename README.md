@@ -31,4 +31,22 @@ Vitality: determines how much damage the avatar takes from attacks.<br/>
 Intelligence: has no affect on an avatar at the moment.<br/>
 <br/>
 <br/>
+
+## Compilation
+
+To compile this mod, create a file named `AvatarStatsLoader.csproj.user` in the
+project. Copy this text into the file, replacing the path in `BONELAB_PATH` with
+the path to your BONELAB installation.
+```
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <BONELAB_PATH>C:\Program Files (x86)\Steam\steamapps\common\BONELAB</BONELAB_PATH>
+    </PropertyGroup>
+</Project>
+```
+<br/>
+<br/>
+
+
 This mod was inspired by [StatsOverride](https://bonelab.thunderstore.io/package/extraes/StatOverride/) , and I looked at (disassembled) code for it and for [DynamicBones](https://bonelab.thunderstore.io/package/LlamasHere/Dynamic_Bones/) in order to figure out how to make this mod. NO SIGNIFICANT PORTIONS OF CODE WERE COPIED TO MAKE THIS MOD.<br/>
