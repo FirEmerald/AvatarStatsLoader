@@ -35,9 +35,6 @@
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>$(BONELAB_PATH)\MelonLoader\Il2CppAssemblies\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
-    <Reference Include="System.Security.Permissions">
-      <HintPath>$(BONELAB_PATH)\</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="AvatarStatsLoader.csproj.user" />
