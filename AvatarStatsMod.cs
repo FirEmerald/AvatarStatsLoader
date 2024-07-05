@@ -2,10 +2,11 @@
 using HarmonyLib;
 using Il2CppSLZ.VRMK;
 using Il2CppSystem.IO;
-using Newtonsoft.Json;
+using System.Text.Json;
 using BoneLib;
 using System;
 using System.Reflection;
+using System.Text.Json.Serialization;
 using AvatarStatsLoader.BoneMenu;
 using MelonLoader.Utils;
 
@@ -179,7 +180,7 @@ namespace AvatarStatsLoader
                 string statsFile = Path.Combine(AvatarStatsMod.STATS_FOLDER, currentAvatar.getName() + ".json");
                 //string statsFile = AvatarStatsMod.STATS_FOLDER + "\\" + Player.rigManager.AvatarCrate.Barcode.ID + ".json";
                 Log("Saving stats to " + statsFile);
-                File.WriteAllText(statsFile, JsonConvert.SerializeObject(new AvatarStats(agility.Value, strengthUpper.Value, strengthLower.Value, vitality.Value, speed.Value, intelligence.Value)));
+                File.WriteAllText(statsFile, JsonSerializer.Serialize(new AvatarStats(agility.Value, strengthUpper.Value, strengthLower.Value, vitality.Value, speed.Value, intelligence.Value)));
             }
         }
 
@@ -210,7 +211,7 @@ namespace AvatarStatsLoader
                 }
                 string massFile = Path.Combine(AvatarStatsMod.MASS_FOLDER, currentAvatar.getName() + ".json");
                 AvatarStatsMod.Log("Saving masses to " + massFile);
-                File.WriteAllText(massFile, JsonConvert.SerializeObject(new AvatarMass(massChest.Value, massPelvis.Value, massHead.Value, massArm.Value, massLeg.Value)));
+                File.WriteAllText(massFile, JsonSerializer.Serialize(new AvatarMass(massChest.Value, massPelvis.Value, massHead.Value, massArm.Value, massLeg.Value)));
             }
         }
 
@@ -270,7 +271,7 @@ namespace AvatarStatsLoader
                     if (File.Exists(statsFile))
                     {
                         AvatarStatsMod.Log("Overriding stats with values from " + statsFile);
-                        JsonConvert.DeserializeObject<AvatarStats>(File.ReadAllText(statsFile)).apply(__instance);
+                        JsonSerializer.Deserialize<AvatarStats>(File.ReadAllText(statsFile)).apply(__instance);
                     }
                 }
                 __instance.setLoadStats();
@@ -279,11 +280,17 @@ namespace AvatarStatsLoader
     }
     public class AvatarStats
     {
+        [JsonInclude]
         public float agility;
+        [JsonInclude]
         public float strengthUpper;
+        [JsonInclude]
         public float strengthLower;
+        [JsonInclude]
         public float vitality;
+        [JsonInclude]
         public float speed;
+        [JsonInclude]
         public float intelligence;
 
         public AvatarStats() {}
@@ -347,7 +354,7 @@ namespace AvatarStatsLoader
                     if (File.Exists(massFile))
                     {
                         AvatarStatsMod.Log("Overriding mass with values from " + massFile);
-                        JsonConvert.DeserializeObject<AvatarMass>(File.ReadAllText(massFile)).apply(__instance);
+                        JsonSerializer.Deserialize<AvatarStats>(File.ReadAllText(massFile)).apply(__instance);
                     }
                 }
                 __instance.setLoadMasses();

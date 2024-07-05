@@ -20,9 +20,6 @@
     <Reference Include="MelonLoader">
       <HintPath>$(BONELAB_PATH)\MelonLoader\net6\MelonLoader.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>$(BONELAB_PATH)\MelonLoader\Managed\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="Il2CppSLZ.Marrow">
       <HintPath>$(BONELAB_PATH)\MelonLoader\Il2CppAssemblies\Il2CppSLZ.Marrow.dll</HintPath>
     </Reference>
@@ -37,6 +34,9 @@
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>$(BONELAB_PATH)\MelonLoader\Il2CppAssemblies\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Permissions">
+      <HintPath>$(BONELAB_PATH)\</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
