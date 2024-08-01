@@ -29,12 +29,12 @@ namespace AvatarStatsLoader.BoneMenu
             loadFromAvatarCalculated = menu.CreateFunctionElement("Load from avatar's computed value", "ffffff", () => {
                 entry.ResetToDefault();
             });
-            entry.OnEntryValueChanged.Subscribe((prev, cur) => refreshDisplayValue(), int.MaxValue);
+            entry.OnEntryValueChanged.Subscribe((prev, cur) => RefreshDisplayValue(), int.MaxValue);
         }
 
         //private readonly FieldInfo elementField = typeof(UIValueField).GetField("element", BindingFlags.NonPublic | BindingFlags.Instance);
 
-        public void refreshDisplayValue()
+        public void RefreshDisplayValue()
         {
             foreach (UIValueField obj in GameObject.FindObjectsOfType<UIValueField>())
             {

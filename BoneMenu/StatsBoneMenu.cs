@@ -9,7 +9,7 @@ namespace AvatarStatsLoader.BoneMenu
         public static EntryMenu agility, strengthUpper, strengthLower, vitality, speed, intelligence;
         public static FunctionElement saveStats;
 
-        public static void init()
+        public static void Init()
         {
             menu = MenuManager.CreateCategory("Avatar Stats", "ffffff");
             agility = new EntryMenu(menu, "Agility", () => AvatarStatsMod.currentAvatar.getLoadAgility(), AvatarStatsMod.agility);

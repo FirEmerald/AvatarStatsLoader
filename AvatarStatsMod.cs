@@ -68,7 +68,8 @@ namespace AvatarStatsLoader
                     currentAvatar = null;
                 }
             };
-            LemonAction<float, float> refreshAvatarAct = (prev, cur) => refreshAvatarStats();
+
+            static void refreshAvatarAct(float prev, float cur) => RefreshAvatarStats();
             mpCat = MelonPreferences.CreateCategory(nameof(AvatarStatsMod));
             agility = mpCat.CreateEntry("agility", 0f, "Agility", "Determines how fast an avatar can acclerate or decelerate.", dont_save_default:true);
             strengthUpper = mpCat.CreateEntry("strengthUpper", 0f, "Arm strength", "Determines the arm strength, affecting weapon holding and climbing.", dont_save_default: true);
@@ -86,7 +87,7 @@ namespace AvatarStatsLoader
             loadStats.OnEntryValueChanged.Subscribe((prev, cur) => {
                 if (cur)
                 {
-                    loadStatValues();
+                    LoadStatValues();
                     loadStats.ResetToDefault();
                 }
             });
@@ -112,7 +113,7 @@ namespace AvatarStatsLoader
             loadMasses.OnEntryValueChanged.Subscribe((prev, cur) => {
                 if (cur)
                 {
-                    loadMassValues();
+                    LoadMassValues();
                     loadMasses.ResetToDefault();
                 }
             });
@@ -131,14 +132,13 @@ namespace AvatarStatsLoader
         {
             Type bonelibType = typeof(BoneLib.BuildInfo);
             FieldInfo versionField = bonelibType.GetField("Version");
-            Version boneLibVersion;
-            bool versionParsed = Version.TryParse(versionField.GetRawConstantValue() as string, out boneLibVersion);
+            bool versionParsed = Version.TryParse(versionField.GetRawConstantValue() as string, out Version boneLibVersion);
             if (versionParsed)
             {
                 if (boneLibVersion.Major >= 2) //add bonemenu for bonelib 2.0.0+
                 {
                     Log("BoneLib >= 2.0.0 detected, adding to BoneMenu");
-                    StatsBoneMenu.init();
+                    StatsBoneMenu.Init();
                     MassesBoneMenu.init();
                 }
                 else
@@ -149,7 +149,7 @@ namespace AvatarStatsLoader
         }
 
         
-        public void refreshAvatarStats()
+        public static void RefreshAvatarStats()
         {
             if (isLoadingAvatarValues) return; //do not refresh when loading
             if (currentAvatar != null)
@@ -184,13 +184,13 @@ namespace AvatarStatsLoader
             }
         }
 
-        internal static void loadStatValues()
+        internal static void LoadStatValues()
         {
             if (currentAvatar != null)
-                loadStatValues(currentAvatar);
+                LoadStatValues(currentAvatar);
         }
 
-        internal static void loadStatValues(Avatar avatar)
+        internal static void LoadStatValues(Avatar avatar)
         {
             agility.Value = avatar._agility;
             strengthUpper.Value = avatar._strengthUpper;
@@ -215,13 +215,13 @@ namespace AvatarStatsLoader
             }
         }
 
-        internal static void loadMassValues()
+        internal static void LoadMassValues()
         {
             if (currentAvatar != null)
-                loadMassValues(currentAvatar);
+                LoadMassValues(currentAvatar);
         }
 
-        internal static void loadMassValues(Avatar avatar)
+        internal static void LoadMassValues(Avatar avatar)
         {
             massChest.Value = avatar._massChest;
             massPelvis.Value = avatar._massPelvis;
@@ -271,7 +271,7 @@ namespace AvatarStatsLoader
                     if (File.Exists(statsFile))
                     {
                         AvatarStatsMod.Log("Overriding stats with values from " + statsFile);
-                        JsonSerializer.Deserialize<AvatarStats>(File.ReadAllText(statsFile)).apply(__instance);
+                        JsonSerializer.Deserialize<AvatarStats>(File.ReadAllText(statsFile)).Apply(__instance);
                     }
                 }
                 __instance.setLoadStats();
@@ -315,7 +315,7 @@ namespace AvatarStatsLoader
             intelligence = avatar._intelligence;
         }
 
-        public void apply(Avatar avatar)
+        public void Apply(Avatar avatar)
         {
             avatar._agility = agility;
             avatar._strengthUpper = strengthUpper;
@@ -354,7 +354,7 @@ namespace AvatarStatsLoader
                     if (File.Exists(massFile))
                     {
                         AvatarStatsMod.Log("Overriding mass with values from " + massFile);
-                        JsonSerializer.Deserialize<AvatarStats>(File.ReadAllText(massFile)).apply(__instance);
+                        JsonSerializer.Deserialize<AvatarStats>(File.ReadAllText(massFile)).Apply(__instance);
                     }
                 }
                 __instance.setLoadMasses();
@@ -390,7 +390,7 @@ namespace AvatarStatsLoader
             massLeg = avatar._massLeg;
         }
 
-        public void apply(Avatar avatar)
+        public void Apply(Avatar avatar)
         {
             avatar._massChest = massChest;
             avatar._massPelvis = massPelvis;
