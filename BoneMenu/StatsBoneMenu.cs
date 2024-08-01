@@ -1,5 +1,4 @@
-﻿using BoneLib;
-using BoneLib.BoneMenu;
+﻿using BoneLib.BoneMenu;
 using BoneLib.BoneMenu.Elements;
 
 namespace AvatarStatsLoader.BoneMenu
