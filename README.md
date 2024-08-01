@@ -39,7 +39,7 @@ project. Copy this text into the file, replacing the path in `BONELAB_PATH` with
 the path to your BONELAB installation.
 ```
 <?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+<Project>
     <PropertyGroup>
         <BONELAB_PATH>C:\Program Files (x86)\Steam\steamapps\common\BONELAB</BONELAB_PATH>
     </PropertyGroup>
