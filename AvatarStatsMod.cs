@@ -142,7 +142,7 @@ namespace AvatarStatsLoader
                     MassesBoneMenu.Init();
                 }
                 else
-                    Log("BoneLib < 3.0.0 detected, BoneMenu functionality disabled. Consider updating BoneLib if possible, or rolling back to AvatarStats 1.3.0.");
+                    Log("BoneLib < 3.0.0 detected, BoneMenu functionality disabled, and errors may occur. Consider updating BoneLib if possible, or rolling back to AvatarStats 1.3.0.");
             }
             else
                 Warn("Could not parse BoneLib version, not loading BoneMenu functionality");
@@ -155,15 +155,22 @@ namespace AvatarStatsLoader
             if (currentAvatar != null)
             {
                 Log("Refreshing " + currentAvatar.GetName());
-                //Player.rigManager.ava
-                //Player.rigManager.onAvatarSwapped.Invoke(); //no change
-                //Player.GetPhysicsRig().SetAvatar(currentAvatar); //no change
-                //Player.controllerRig.SetAvatar(currentAvatar);
-                //Player.physicsRig.SetAvatar(currentAvatar);
-                //Player.rigManager._avatarDirty = true; //initially loaded avatar gets reset to polyblank for some reason. switching to a different avatar and back fixes it.
-                //Player.rigManager.SwitchAvatar(currentAvatar); //same effect as above whilst calling more code
-                Player.RigManager.SwapAvatar(currentAvatar); //same effect as above whilst calling more code
-                //Player.rigManager.SwapAvatarCrate(Player.rigManager.AvatarCrate.Barcode, false, null); re-loads entire avatar, preventing overrides from applying
+                try
+                {
+                    //Player.rigManager.ava
+                    //Player.rigManager.onAvatarSwapped.Invoke(); //no change
+                    //Player.GetPhysicsRig().SetAvatar(currentAvatar); //no change
+                    //Player.controllerRig.SetAvatar(currentAvatar);
+                    //Player.physicsRig.SetAvatar(currentAvatar);
+                    //Player.rigManager._avatarDirty = true; //initially loaded avatar gets reset to polyblank for some reason. switching to a different avatar and back fixes it.
+                    //Player.rigManager.SwitchAvatar(currentAvatar); //same effect as above whilst calling more code
+                    Player.RigManager.SwapAvatar(currentAvatar); //same effect as above whilst calling more code
+                    //Player.rigManager.SwapAvatarCrate(Player.rigManager.AvatarCrate.Barcode, false, null); re-loads entire avatar, preventing overrides from applying
+                }
+                catch (Exception e)
+                {
+                    Error("An error occurred attempting to refresh avatar stats.", e);
+                }
             }
         }
         
@@ -232,13 +239,19 @@ namespace AvatarStatsLoader
 
         internal static void Log(string str) => instance.LoggerInstance.Msg(str);
 
+        internal static void Log(string str, Exception ex) => instance.LoggerInstance.Msg(str, ex);
+
         internal static void Log(object obj) => instance.LoggerInstance.Msg(obj?.ToString() ?? "null");
 
         internal static void Warn(string str) => instance.LoggerInstance.Warning(str);
 
+        internal static void Warn(string str, Exception ex) => instance.LoggerInstance.Warning(str, ex);
+
         internal static void Warn(object obj) => instance.LoggerInstance.Warning(obj?.ToString() ?? "null");
 
         internal static void Error(string str) => instance.LoggerInstance.Error(str);
+
+        internal static void Error(string str, Exception ex) => instance.LoggerInstance.Error(str, ex);
 
         internal static void Error(object obj) => instance.LoggerInstance.Error(obj?.ToString() ?? "null");
     }
