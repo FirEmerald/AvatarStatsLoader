@@ -1,6 +1,6 @@
 ﻿using System;
-using BoneLib.BoneMenu.Elements;
-using BoneLib.BoneMenu.UI;
+using System.Xml.Linq;
+using BoneLib.BoneMenu;
 using MelonLoader;
 using UnityEngine;
 
@@ -8,42 +8,34 @@ namespace AvatarStatsLoader.BoneMenu
 {
     class EntryMenu
     {
-        public readonly MenuCategory menu;
-        public readonly EntryFloatElement value;
-        public readonly EntryFloatIncrementElement incrementPointOne, incrementPointZeroOne, incrementPointZeroZeroOne;
+        public readonly Page menu;
+        public readonly FloatElement incrementOne, incrementPointOne, incrementPointZeroOne, incrementPointZeroZeroOne;
         public readonly FunctionElement setToOne, loadFromAvatar, loadFromAvatarCalculated;
 
-        public EntryMenu(MenuCategory parentMenu, string name, Func<float> getFromLoaded, MelonPreferences_Entry<float> entry)
+        public EntryMenu(Page parentMenu, string name, Func<float> getFromLoaded, MelonPreferences_Entry<float> entry)
         {
-            menu = parentMenu.CreateCategory(name, "ffffff");
-            value = menu.CreateEntryFloatElement("value", "ffffff", entry, 1f);
-            incrementPointOne = menu.CreateEntryFloatIncrementElement("ffffff", entry, 0.1f);
-            incrementPointZeroOne = menu.CreateEntryFloatIncrementElement("ffffff", entry, 0.01f);
-            incrementPointZeroZeroOne = menu.CreateEntryFloatIncrementElement("ffffff", entry, 0.001f);
-            setToOne = menu.CreateFunctionElement("Set to 1.0", "ffffff", () => {
-                entry.Value = 1.0f;
-            });
-            loadFromAvatar = menu.CreateFunctionElement("Load from avatar's loaded value", "ffffff", () => {
-                entry.Value = getFromLoaded.Invoke();
-            });
-            loadFromAvatarCalculated = menu.CreateFunctionElement("Load from avatar's computed value", "ffffff", () => {
-                entry.ResetToDefault();
-            });
-            entry.OnEntryValueChanged.Subscribe((prev, cur) => RefreshDisplayValue(), int.MaxValue);
+            menu = parentMenu.CreatePage(name, Color.white, 7);
+            incrementOne = MakeIncrement(menu, 1f, entry);
+            incrementPointOne = MakeIncrement(menu, 0.1f, entry);
+            incrementPointZeroOne = MakeIncrement(menu, 0.01f, entry);
+            incrementPointZeroZeroOne = MakeIncrement(menu, 0.01f, entry);
+            setToOne = menu.CreateFunction("Set to 1.0", Color.white, () => entry.Value = 1.0f);
+            loadFromAvatar = menu.CreateFunction("Load from avatar's loaded value", Color.white, () => entry.Value = getFromLoaded.Invoke());
+            loadFromAvatarCalculated = menu.CreateFunction("Load from avatar's computed value", Color.white, () => entry.ResetToDefault());
+            entry.OnEntryValueChanged.Subscribe((prev, cur) =>
+            {
+                if (cur != incrementOne.Value) incrementOne.Value = cur; //avoid cyclical value setting
+                if (cur != incrementPointOne.Value) incrementPointOne.Value = cur; //avoid cyclical value setting
+                if (cur != incrementPointZeroOne.Value) incrementPointZeroOne.Value = cur; //avoid cyclical value setting
+                if (cur != incrementPointZeroZeroOne.Value) incrementPointZeroZeroOne.Value = cur; //avoid cyclical value setting
+            }, int.MaxValue);
         }
 
-        //private readonly FieldInfo elementField = typeof(UIValueField).GetField("element", BindingFlags.NonPublic | BindingFlags.Instance);
-
-        public void RefreshDisplayValue()
+        static FloatElement MakeIncrement(Page page, float increment, MelonPreferences_Entry<float> entry)
         {
-            foreach (UIValueField obj in GameObject.FindObjectsOfType<UIValueField>())
-            {
-                //if (elementField.GetValue(obj) == value)
-                if (obj.NameText.text == value.Name)
-                {
-                    obj.SetText(value.Name, value.DisplayValue);
-                }
-            }
+            return page.CreateFloat("+/-" + increment, Color.white, 0, increment, float.NegativeInfinity, float.PositiveInfinity, value => {
+                if (value != entry.Value) entry.Value = value; //avoid cyclical value setting
+            });
         }
     }
 }

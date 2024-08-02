@@ -30,33 +30,33 @@ namespace AvatarStatsLoader
         public override void OnInitializeMelon()
         {
             Hooking.OnSwitchAvatarPostfix += (avatar) => {
-                if (avatar != null && !avatar.isEmptyRig())
+                if (avatar != null && !avatar.IsEmptyRig())
                 {
                     if (avatar != currentAvatar)
                     {
-                        Log("Setting avatar to " + avatar.getName());
+                        Log("Setting avatar to " + avatar.GetName());
                         isLoadingAvatarValues = true;
-                        agility.DefaultValue = avatar.getDefAgility();
+                        agility.DefaultValue = avatar.GetDefAgility();
                         agility.Value = avatar._agility;
-                        strengthUpper.DefaultValue = avatar.getDefStrengthUpper();
+                        strengthUpper.DefaultValue = avatar.GetDefStrengthUpper();
                         strengthUpper.Value = avatar._strengthUpper;
-                        strengthLower.DefaultValue = avatar.getDefStrengthLower();
+                        strengthLower.DefaultValue = avatar.GetDefStrengthLower();
                         strengthLower.Value = avatar._strengthLower;
-                        vitality.DefaultValue = avatar.getDefVitality();
+                        vitality.DefaultValue = avatar.GetDefVitality();
                         vitality.Value = avatar._vitality;
-                        speed.DefaultValue = avatar.getDefSpeed();
+                        speed.DefaultValue = avatar.GetDefSpeed();
                         speed.Value = avatar._speed;
-                        intelligence.DefaultValue = avatar.getDefIntelligence();
+                        intelligence.DefaultValue = avatar.GetDefIntelligence();
                         intelligence.Value = avatar._intelligence;
-                        massChest.DefaultValue = avatar.getDefMassChest();
+                        massChest.DefaultValue = avatar.GetDefMassChest();
                         massChest.Value = avatar._massChest;
-                        massPelvis.DefaultValue = avatar.getDefMassPelvis();
+                        massPelvis.DefaultValue = avatar.GetDefMassPelvis();
                         massPelvis.Value = avatar._massPelvis;
-                        massHead.DefaultValue = avatar.getDefMassHead();
+                        massHead.DefaultValue = avatar.GetDefMassHead();
                         massHead.Value = avatar._massHead;
-                        massArm.DefaultValue = avatar.getDefMassArm();
+                        massArm.DefaultValue = avatar.GetDefMassArm();
                         massArm.Value = avatar._massArm;
-                        massLeg.DefaultValue = avatar.getDefMassLeg();
+                        massLeg.DefaultValue = avatar.GetDefMassLeg();
                         massLeg.Value = avatar._massLeg;
                         currentAvatar = avatar;
                         isLoadingAvatarValues = false;
@@ -135,14 +135,14 @@ namespace AvatarStatsLoader
             bool versionParsed = Version.TryParse(versionField.GetRawConstantValue() as string, out Version boneLibVersion);
             if (versionParsed)
             {
-                if (boneLibVersion.Major >= 2) //add bonemenu for bonelib 2.0.0+
+                if (boneLibVersion.Major >= 3)
                 {
-                    Log("BoneLib >= 2.0.0 detected, adding to BoneMenu");
+                    Log("BoneLib >= 3.0.0 detected, adding to BoneMenu");
                     StatsBoneMenu.Init();
-                    MassesBoneMenu.init();
+                    MassesBoneMenu.Init();
                 }
                 else
-                    Log("BoneLib < 2.0.0 detected, BoneMenu functionality disabled. Consider updating BoneLib if possible.");
+                    Log("BoneLib < 3.0.0 detected, BoneMenu functionality disabled. Consider updating BoneLib if possible, or rolling back to AvatarStats 1.3.0.");
             }
             else
                 Warn("Could not parse BoneLib version, not loading BoneMenu functionality");
@@ -154,7 +154,7 @@ namespace AvatarStatsLoader
             if (isLoadingAvatarValues) return; //do not refresh when loading
             if (currentAvatar != null)
             {
-                Log("Refreshing " + currentAvatar.getName());
+                Log("Refreshing " + currentAvatar.GetName());
                 //Player.rigManager.ava
                 //Player.rigManager.onAvatarSwapped.Invoke(); //no change
                 //Player.GetPhysicsRig().SetAvatar(currentAvatar); //no change
@@ -162,7 +162,7 @@ namespace AvatarStatsLoader
                 //Player.physicsRig.SetAvatar(currentAvatar);
                 //Player.rigManager._avatarDirty = true; //initially loaded avatar gets reset to polyblank for some reason. switching to a different avatar and back fixes it.
                 //Player.rigManager.SwitchAvatar(currentAvatar); //same effect as above whilst calling more code
-                Player.rigManager.SwapAvatar(currentAvatar); //same effect as above whilst calling more code
+                Player.RigManager.SwapAvatar(currentAvatar); //same effect as above whilst calling more code
                 //Player.rigManager.SwapAvatarCrate(Player.rigManager.AvatarCrate.Barcode, false, null); re-loads entire avatar, preventing overrides from applying
             }
         }
@@ -177,7 +177,7 @@ namespace AvatarStatsLoader
                     DirectoryInfo info = Directory.CreateDirectory(AvatarStatsMod.STATS_FOLDER);
                     Log("Avatar stats folder did not exist, created at " + info.Name);
                 }
-                string statsFile = Path.Combine(AvatarStatsMod.STATS_FOLDER, currentAvatar.getName() + ".json");
+                string statsFile = Path.Combine(AvatarStatsMod.STATS_FOLDER, currentAvatar.GetName() + ".json");
                 //string statsFile = AvatarStatsMod.STATS_FOLDER + "\\" + Player.rigManager.AvatarCrate.Barcode.ID + ".json";
                 Log("Saving stats to " + statsFile);
                 File.WriteAllText(statsFile, JsonSerializer.Serialize(new AvatarStats(agility.Value, strengthUpper.Value, strengthLower.Value, vitality.Value, speed.Value, intelligence.Value)));
@@ -209,7 +209,7 @@ namespace AvatarStatsLoader
                     DirectoryInfo info = Directory.CreateDirectory(AvatarStatsMod.MASS_FOLDER);
                     AvatarStatsMod.Log("Avatar masses folder did not exist, created at " + info.Name);
                 }
-                string massFile = Path.Combine(AvatarStatsMod.MASS_FOLDER, currentAvatar.getName() + ".json");
+                string massFile = Path.Combine(AvatarStatsMod.MASS_FOLDER, currentAvatar.GetName() + ".json");
                 AvatarStatsMod.Log("Saving masses to " + massFile);
                 File.WriteAllText(massFile, JsonSerializer.Serialize(new AvatarMass(massChest.Value, massPelvis.Value, massHead.Value, massArm.Value, massLeg.Value)));
             }
@@ -248,9 +248,9 @@ namespace AvatarStatsLoader
     {
         public static void Postfix(Avatar __instance)
         {
-            if (__instance.isEmptyRig())
+            if (__instance.IsEmptyRig())
                 return;
-            string name = __instance.getName();
+            string name = __instance.GetName();
             if (__instance == AvatarStatsMod.currentAvatar)
             {
                 AvatarStatsMod.Log("Overriding stats for " + name + " with values from preferences.");
@@ -263,7 +263,7 @@ namespace AvatarStatsLoader
             }
             else
             {
-                __instance.setDefStats();
+                __instance.SetDefStats();
                 AvatarStatsMod.Log("Load stats: " + name);
                 if (Directory.Exists(AvatarStatsMod.STATS_FOLDER))
                 {
@@ -274,7 +274,7 @@ namespace AvatarStatsLoader
                         JsonSerializer.Deserialize<AvatarStats>(File.ReadAllText(statsFile)).Apply(__instance);
                     }
                 }
-                __instance.setLoadStats();
+                __instance.SetLoadStats();
             }
         }
     }
@@ -331,9 +331,9 @@ namespace AvatarStatsLoader
     {
         public static void Postfix(Avatar __instance, float normalizeTo82)
         {
-            if (__instance.isEmptyRig())
+            if (__instance.IsEmptyRig())
                 return;
-            string name = __instance.getName();
+            string name = __instance.GetName();
             if (__instance == AvatarStatsMod.currentAvatar)
             {
                 AvatarStatsMod.Log("Overriding mass for " + name + " with values from preferences.");
@@ -342,11 +342,11 @@ namespace AvatarStatsLoader
                 __instance._massHead = AvatarStatsMod.massHead.Value;
                 __instance._massArm = AvatarStatsMod.massArm.Value;
                 __instance._massLeg = AvatarStatsMod.massLeg.Value;
-                __instance.recalculateTotalMass();
+                __instance.RecalculateTotalMass();
             }
             else
             {
-                __instance.setDefMasses();
+                __instance.SetDefMasses();
                 AvatarStatsMod.Log("Load mass: " + name);
                 if (Directory.Exists(AvatarStatsMod.MASS_FOLDER))
                 {
@@ -357,7 +357,7 @@ namespace AvatarStatsLoader
                         JsonSerializer.Deserialize<AvatarStats>(File.ReadAllText(massFile)).Apply(__instance);
                     }
                 }
-                __instance.setLoadMasses();
+                __instance.SetLoadMasses();
             }
         }
     }
@@ -397,7 +397,7 @@ namespace AvatarStatsLoader
             avatar._massHead = massHead;
             avatar._massArm = massArm;
             avatar._massLeg = massLeg;
-            avatar.recalculateTotalMass();
+            avatar.RecalculateTotalMass();
         }
     }
 }
