@@ -367,7 +367,7 @@ namespace AvatarStatsLoader
                     if (File.Exists(massFile))
                     {
                         AvatarStatsMod.Log("Overriding mass with values from " + massFile);
-                        JsonSerializer.Deserialize<AvatarStats>(File.ReadAllText(massFile)).Apply(__instance);
+                        JsonSerializer.Deserialize<AvatarMass>(File.ReadAllText(massFile)).Apply(__instance);
                     }
                 }
                 __instance.SetLoadMasses();
