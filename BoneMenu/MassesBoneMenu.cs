@@ -11,7 +11,7 @@ namespace AvatarStatsLoader.BoneMenu
 
         public static void Init()
         {
-            menu = Menu.CreatePage("Avatar Mass", Color.white, 7);
+            menu = Page.Root.CreatePage("Avatar Mass", Color.white, 7);
             massChest = new EntryMenu(menu, "Chest Mass", () => AvatarStatsMod.currentAvatar.GetLoadMassChest(), AvatarStatsMod.massChest);
             massPelvis = new EntryMenu(menu, "Pelvis Mass", () => AvatarStatsMod.currentAvatar.GetLoadMassPelvis(), AvatarStatsMod.massPelvis);
             massHead = new EntryMenu(menu, "Head Mass", () => AvatarStatsMod.currentAvatar.GetLoadMassHead(), AvatarStatsMod.massHead);

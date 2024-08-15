@@ -11,7 +11,7 @@ namespace AvatarStatsLoader.BoneMenu
 
         public static void Init()
         {
-            menu = Menu.CreatePage("Avatar Stats", Color.white, 7);
+            menu = Page.Root.CreatePage("Avatar Stats", Color.white, 7);
             agility = new EntryMenu(menu, "Agility", () => AvatarStatsMod.currentAvatar.GetLoadAgility(), AvatarStatsMod.agility);
             strengthUpper = new EntryMenu(menu, "Strength Upper", () => AvatarStatsMod.currentAvatar.GetLoadStrengthUpper(), AvatarStatsMod.strengthUpper);
             strengthLower = new EntryMenu(menu, "Strength Lower", () => AvatarStatsMod.currentAvatar.GetLoadStrengthLower(), AvatarStatsMod.strengthLower);
