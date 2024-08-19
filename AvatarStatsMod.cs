@@ -126,10 +126,7 @@ namespace AvatarStatsLoader
                 }
             });
             mpCat.SaveToFile(true);
-        }
 
-        public override void OnLateInitializeMelon()
-        {
             Type bonelibType = typeof(BoneLib.BuildInfo);
             FieldInfo versionField = bonelibType.GetField("Version");
             bool versionParsed = Version.TryParse(versionField.GetRawConstantValue() as string, out Version boneLibVersion);
