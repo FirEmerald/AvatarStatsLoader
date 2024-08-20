@@ -12,6 +12,17 @@ using MelonLoader.Utils;
 
 namespace AvatarStatsLoader
 {
+    public class AssemblyInfo
+    {
+        public const string Name = "Avatar Stats Loader";
+        public const string Product = "AvatarStatsLoader";
+        public const string Description = "Customized stats loader for BoneLab";
+        public const string Version = "1.3.4";
+        public const string Author = "FirEmerald";
+        public const string Copyright = $"Copyright © {Author} 2022";
+        public const string URL = "https://bonelab.thunderstore.io/package/FirEmerald/AvatarStatsLoader/";
+    }
+
     public class AvatarStatsMod : MelonMod
     {
         internal static readonly string STATS_FOLDER = Path.Combine(MelonEnvironment.UserDataDirectory, "AvatarStats");
@@ -126,26 +137,8 @@ namespace AvatarStatsLoader
                 }
             });
             mpCat.SaveToFile(true);
-        }
-
-        public override void OnLateInitializeMelon()
-        {
-            Type bonelibType = typeof(BoneLib.BuildInfo);
-            FieldInfo versionField = bonelibType.GetField("Version");
-            bool versionParsed = Version.TryParse(versionField.GetRawConstantValue() as string, out Version boneLibVersion);
-            if (versionParsed)
-            {
-                if (boneLibVersion.Major >= 3)
-                {
-                    Log("BoneLib >= 3.0.0 detected, adding to BoneMenu");
-                    StatsBoneMenu.Init();
-                    MassesBoneMenu.Init();
-                }
-                else
-                    Log("BoneLib < 3.0.0 detected, BoneMenu functionality disabled, and errors may occur. Consider updating BoneLib if possible, or rolling back to AvatarStats 1.3.0.");
-            }
-            else
-                Warn("Could not parse BoneLib version, not loading BoneMenu functionality");
+            StatsBoneMenu.Init();
+            MassesBoneMenu.Init();
         }
 
         

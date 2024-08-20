@@ -5,7 +5,7 @@ Allows loading of customized avatar stats in BoneLab<br/>
 AvatarStatsLoader loads customized avatar stats from "\<Game directory\>\\UserData\\AvatarStats\\\<avatar name\>.json".<br/>
 <br/>
 <br/>
-# Setting up custom stats using BoneLib 2.0.0 or newer using the BoneMenu
+# Setting up custom stats using BoneMenu
 In-game, switch to the avatar you want to set up.<br/>
 **IMPORTANT: DO NOT ATTEMPT TO CHANGE STATS AFTER LOADING A LEVEL (INCLUDING LOADING THE GAME) BEFORE SWAPPING AVATARS AT LEAST ONCE. THERE'S A BUG WHERE DOING SO PUTS YOU INTO A POLYBLANK**<br/>
 Open up Menu->Preferences/Options->BoneMenu->Avatar Stats or Avatar Mass<br/>

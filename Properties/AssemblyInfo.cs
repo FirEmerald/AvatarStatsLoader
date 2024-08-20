@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using MelonLoader;
 using AvatarStatsLoader;
@@ -7,12 +6,12 @@ using AvatarStatsLoader;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("AvatarStatsLoader")]
-[assembly: AssemblyDescription("Customized stats loader for BoneLab")]
+[assembly: AssemblyTitle(AssemblyInfo.Name)]
+[assembly: AssemblyDescription(AssemblyInfo.Description)]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("AvatarStatsLoader")]
-[assembly: AssemblyCopyright("Copyright © FirEmerald 2022")]
+[assembly: AssemblyProduct(AssemblyInfo.Product)]
+[assembly: AssemblyCopyright(AssemblyInfo.Copyright)]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -34,7 +33,7 @@ using AvatarStatsLoader;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.3.3")]
-[assembly: AssemblyFileVersion("1.3.3")]
+[assembly: AssemblyVersion(AssemblyInfo.Version)]
+[assembly: AssemblyFileVersion(AssemblyInfo.Version)]
 
-[assembly: MelonInfo(typeof(AvatarStatsMod), "Avatar Stats Loader", "1.3.3", "FirEmerald", "https://bonelab.thunderstore.io/package/FirEmerald/AvatarStatsLoader/")] //TODO mod link
+[assembly: MelonInfo(typeof(AvatarStatsMod), AssemblyInfo.Name, AssemblyInfo.Version, AssemblyInfo.Author, AssemblyInfo.URL)]
