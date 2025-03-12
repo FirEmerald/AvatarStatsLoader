@@ -17,9 +17,9 @@ namespace AvatarStatsLoader
         public const string Name = "Avatar Stats Loader";
         public const string Product = "AvatarStatsLoader";
         public const string Description = "Customized stats loader for BoneLab";
-        public const string Version = "1.3.4";
+        public const string Version = "1.3.5";
         public const string Author = "FirEmerald";
-        public const string Copyright = $"Copyright © {Author} 2022";
+        public const string Copyright = $"Copyright © {Author} 2024";
         public const string URL = "https://bonelab.thunderstore.io/package/FirEmerald/AvatarStatsLoader/";
     }
 
@@ -35,8 +35,9 @@ namespace AvatarStatsLoader
         internal static MelonPreferences_Entry<bool> loadMasses, saveMasses;
         internal static Avatar currentAvatar = null; //we cannot use BoneLib's hook for this now
         internal static Boolean isLoadingAvatarValues = false;
+        internal static readonly JsonSerializerOptions jsonOpts = new() { WriteIndented = true, AllowTrailingCommas = true };
 
-        public AvatarStatsMod() => instance = this;
+    public AvatarStatsMod() => instance = this;
 
         public override void OnInitializeMelon()
         {
@@ -180,7 +181,7 @@ namespace AvatarStatsLoader
                 string statsFile = Path.Combine(AvatarStatsMod.STATS_FOLDER, currentAvatar.GetName() + ".json");
                 //string statsFile = AvatarStatsMod.STATS_FOLDER + "\\" + Player.rigManager.AvatarCrate.Barcode.ID + ".json";
                 Log("Saving stats to " + statsFile);
-                File.WriteAllText(statsFile, JsonSerializer.Serialize(new AvatarStats(agility.Value, strengthUpper.Value, strengthLower.Value, vitality.Value, speed.Value, intelligence.Value)));
+                File.WriteAllText(statsFile, JsonSerializer.Serialize(new AvatarStats(agility.Value, strengthUpper.Value, strengthLower.Value, vitality.Value, speed.Value, intelligence.Value), jsonOpts));
             }
         }
 
@@ -211,7 +212,7 @@ namespace AvatarStatsLoader
                 }
                 string massFile = Path.Combine(AvatarStatsMod.MASS_FOLDER, currentAvatar.GetName() + ".json");
                 AvatarStatsMod.Log("Saving masses to " + massFile);
-                File.WriteAllText(massFile, JsonSerializer.Serialize(new AvatarMass(massChest.Value, massPelvis.Value, massHead.Value, massArm.Value, massLeg.Value)));
+                File.WriteAllText(massFile, JsonSerializer.Serialize(new AvatarMass(massChest.Value, massPelvis.Value, massHead.Value, massArm.Value, massLeg.Value), jsonOpts));
             }
         }
 
@@ -277,7 +278,7 @@ namespace AvatarStatsLoader
                     if (File.Exists(statsFile))
                     {
                         AvatarStatsMod.Log("Overriding stats with values from " + statsFile);
-                        JsonSerializer.Deserialize<AvatarStats>(File.ReadAllText(statsFile)).Apply(__instance);
+                        JsonSerializer.Deserialize<AvatarStats>(File.ReadAllText(statsFile), AvatarStatsMod.jsonOpts).Apply(__instance);
                     }
                 }
                 __instance.SetLoadStats();
@@ -360,7 +361,7 @@ namespace AvatarStatsLoader
                     if (File.Exists(massFile))
                     {
                         AvatarStatsMod.Log("Overriding mass with values from " + massFile);
-                        JsonSerializer.Deserialize<AvatarMass>(File.ReadAllText(massFile)).Apply(__instance);
+                        JsonSerializer.Deserialize<AvatarMass>(File.ReadAllText(massFile), AvatarStatsMod.jsonOpts).Apply(__instance);
                     }
                 }
                 __instance.SetLoadMasses();
@@ -370,10 +371,15 @@ namespace AvatarStatsLoader
 
     public class AvatarMass
     {
+        [JsonInclude]
         public float massChest;
+        [JsonInclude]
         public float massPelvis;
+        [JsonInclude]
         public float massHead;
+        [JsonInclude]
         public float massArm;
+        [JsonInclude]
         public float massLeg;
 
         public AvatarMass() {}

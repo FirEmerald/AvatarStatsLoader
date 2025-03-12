@@ -7,11 +7,11 @@ namespace AvatarStatsLoader.BoneMenu
     {
         public static Page menu;
         public static EntryMenu agility, strengthUpper, strengthLower, vitality, speed, intelligence;
-        public static FunctionElement saveStats, loadStats;
+        public static FunctionElement saveStats;
 
         public static void Init()
         {
-            menu = Page.Root.CreatePage("Avatar Stats", Color.white, 7);
+            menu = Page.Root.CreatePage("Avatar Stats", Color.white);
             agility = new EntryMenu(menu, "Agility", () => AvatarStatsMod.currentAvatar.GetLoadAgility(), AvatarStatsMod.agility);
             strengthUpper = new EntryMenu(menu, "Strength Upper", () => AvatarStatsMod.currentAvatar.GetLoadStrengthUpper(), AvatarStatsMod.strengthUpper);
             strengthLower = new EntryMenu(menu, "Strength Lower", () => AvatarStatsMod.currentAvatar.GetLoadStrengthLower(), AvatarStatsMod.strengthLower);

@@ -14,7 +14,7 @@ namespace AvatarStatsLoader.BoneMenu
 
         public EntryMenu(Page parentMenu, string name, Func<float> getFromLoaded, MelonPreferences_Entry<float> entry)
         {
-            menu = parentMenu.CreatePage(name, Color.white, 7);
+            menu = parentMenu.CreatePage(name, Color.white);
             incrementOne = MakeIncrement(menu, 1f, entry);
             incrementPointOne = MakeIncrement(menu, 0.1f, entry);
             incrementPointZeroOne = MakeIncrement(menu, 0.01f, entry);
